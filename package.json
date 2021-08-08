@@ -2,7 +2,7 @@
   "displayName": "Homebridge No-IP",
   "name": "homebridge-noip",
   "version": "0.1.0",
-  "description": "The [Homebridge](https://homebridge.io) Honeywell Home plugin allows you to access your [Honeywell Home](https://honeywellhome.com) device(s) from HomeKit.",
+  "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
   "repository": {
@@ -33,7 +33,8 @@
   ],
   "keywords": [
     "homebridge-plugin",
-    "noip"
+    "noip",
+    "No-IP"
   ],
   "dependencies": {
     "axios": "^0.21.1",

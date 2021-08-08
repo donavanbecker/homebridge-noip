@@ -2,47 +2,35 @@ import { PlatformConfig } from 'homebridge';
 /**
  * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
  */
-export const PLATFORM_NAME = 'HoneywellHome';
+export const PLATFORM_NAME = 'NoIP';
 
 /**
  * This must match the name of your plugin as defined the package.json
  */
-export const PLUGIN_NAME = 'homebridge-honeywell-home';
+export const PLUGIN_NAME = 'homebridge-noip';
 
 /**
  * This is the main url used to access honeywell API
  */
-export const AuthURL = 'https://api.honeywell.com/oauth2/token';
+export const HTTP = 'http://dynupdate.no-ip.com/nic/update';
 
 /**
  * This is the main url used to access honeywell API
  */
-export const LocationURL = 'https://api.honeywell.com/v2/locations';
-
-/**
- * This is the main url used to access honeywell API
- */
-export const DeviceURL = 'https://api.honeywell.com/v2/devices';
-
-/**
- * This is the url used to access UI Login to honeywell API
- */
-export const UIurl = 'https://homebridge-honeywell.iot.oz.nu/user/refresh';
-
+export const HTTPS = 'https://dynupdate.no-ip.com/nic/update';
 
 //Config
-export interface HoneywellPlatformConfig extends PlatformConfig {
+export interface NoIPPlatformConfig extends PlatformConfig {
   credentials?: credentials;
-  devicediscovery?: boolean;
+  debug?: boolean;
   disablePlugin?: boolean;
   options?: options | Record<string, never>;
 }
 
 export type credentials = {
-  accessToken?: any;
-  consumerKey?: any;
-  consumerSecret?: any;
-  refreshToken?: any;
+  username?: any;
+  password?: any;
+  userpass?: any;
 };
 
 export type options = {

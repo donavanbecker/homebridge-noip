@@ -1,28 +1,28 @@
 {
-  "pluginAlias": "HoneywellHome",
+  "pluginAlias": "NoIP",
   "pluginType": "platform",
   "singular": true,
   "customUi": true,
-  "headerDisplay": "<p align='center'><img width='250px' src='https://user-images.githubusercontent.com/3979615/71876008-d99d7400-3179-11ea-909b-9d2a3d1e670f.png'></p>\n\nThe **Homebridge Honeywell Home** plugin allows you to control Honeywell Home thermostats and also view your Leak and Room Sensors from HomeKit. \n\nTo get started link your Honeywell Home account using the button below.",
-  "footerDisplay": "Your Honeywell Home account has been linked. Please raise any issues on our [project page](https://github.com/donavanbecker/homebridge-honeywell-home/issues).\n\nIf you would like to have other Honeywell Devices besides Thermostat, Leak Sensors, or Room Sensors added to this plugin fill out [Feature Request Form](https://github.com/donavanbecker/homebridge-honeywell-home/issues/new?assignees=&labels=&template=feature_request.md).",
+  "headerDisplay": "<p align='center'><img width='250px' src='https://user-images.githubusercontent.com/3979615/71876008-d99d7400-3179-11ea-909b-9d2a3d1e670f.png'></p>\n\nThe **Homebridge No-IP** plugin allows you to update your No-IP hostnames. \n\nTo get started link your No-IP account using the button below.",
+  "footerDisplay": "Your No-IP account has been linked. Please raise any issues on our [project page](https://github.com/donavanbecker/homebridge-noip/issues).\n\nIf you would like to have other features, fill out [Feature Request Form](https://github.com/donavanbecker/homebridge-noip/issues/new?assignees=&labels=&template=feature_request.md).",
   "schema": {
     "type": "object",
     "properties": {
       "name": {
         "type": "string",
         "title": "Name",
-        "default": "HoneywellHome",
+        "default": "NoIP",
         "required": true
       },
       "credentials": {
         "type": "object",
         "properties": {
-          "consumerKey": {
+          "username": {
             "title": "Consumer Key",
             "type": "string",
             "required": true
           },
-          "consumerSecret": {
+          "password": {
             "title": "Consumer Secret",
             "type": "string"
           },
@@ -47,7 +47,7 @@
             "type": "number",
             "minimum": 120,
             "placeholder": 900,
-            "description": "Indicates the number of seconds between polls of the Honeywell Home service."
+            "description": "Indicates the number of seconds between polls of the No-IP service."
           },
           "pushRate": {
             "title": "Push Rate",
@@ -199,7 +199,7 @@
   "layout": [
     {
       "type": "fieldset",
-      "title": "Honeywell Home Account Info",
+      "title": "No-IP Account Info",
       "expandable": true,
       "expanded": false,
       "items": [
@@ -221,7 +221,7 @@
       "items": [
         {
           "type": "help",
-          "helpvalue": "<h5>Refresh Rate</h5><em class='primary-text'>Refresh Rate indicates the number of seconds between polls of the Honeywell Home service.</em>"
+          "helpvalue": "<h5>Refresh Rate</h5><em class='primary-text'>Refresh Rate indicates the number of seconds between polls of the No-IP service.</em>"
         },
         {
           "key": "options.refreshRate",
@@ -229,7 +229,7 @@
         },
         {
           "type": "help",
-          "helpvalue": "<h5>Push Rate</h5><em class='primary-text'>Push Rate indicates the number of seconds between pushes to Honeywell Home API.</em>"
+          "helpvalue": "<h5>Push Rate</h5><em class='primary-text'>Push Rate indicates the number of seconds between pushes to No-IP API.</em>"
         },
         {
           "key": "options.pushRate",
