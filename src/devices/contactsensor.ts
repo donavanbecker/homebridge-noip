@@ -1,8 +1,8 @@
 import { Service, PlatformAccessory, HAPStatus, CharacteristicValue } from 'homebridge';
 import { NoIPPlatform } from '../platform';
-import { interval, Subject } from 'rxjs';
+import { interval } from 'rxjs';
 import { skipWhile } from 'rxjs/operators';
-import NoIP from '@masx200/no-ip-ddns-ipv6';
+import NoIP from 'no-ip';
 //import { HTTP } from '../settings';
 //import os from 'os';
 
@@ -15,11 +15,10 @@ export class ContactSensor {
   private service: Service;
 
   ContactSensorState!: CharacteristicValue;
-
-  SensorUpdateInProgress!: boolean;
-  doSensorUpdate;
   success!: boolean;
   noip: any;
+
+  SensorUpdateInProgress!: boolean;
 
   constructor(
     private readonly platform: NoIPPlatform,
@@ -28,7 +27,7 @@ export class ContactSensor {
   ) {
     // default placeholders
     this.ContactSensorState;
-    this.success = true;
+    this.success = false;
     this.noip = new NoIP({
       hostname: this.platform.config.hostname,
       user: this.platform.config.username,
@@ -36,7 +35,6 @@ export class ContactSensor {
     });
 
     // this is subject we use to track when we need to POST changes to the NoIP API
-    this.doSensorUpdate = new Subject();
     this.SensorUpdateInProgress = false;
 
     // set accessory information
@@ -100,13 +98,16 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
-      //this.noip.start(this.platform.config.refreshRate);
-      this.noip.update();
-      this.noip.on('success', (isChanged, ip) => {
-        this.platform.log.info('Updated :', isChanged, ip);
+      this.noip.on('error', (err: string) => {
+        this.platform.log.error(err);
+      });
+      this.noip.on('success', (isChanged: boolean, ip: any) => {
+        this.platform.log.debug('IP:', ip);
+        this.platform.log.debug('Has IP Changed:', isChanged);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
         this.success = isChanged;
       });
+      this.noip.update();
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e) {
