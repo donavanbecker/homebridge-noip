@@ -115,7 +115,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    */
   async discoverDevices() {
     const device = this.config.hostname;
-    this.log.info('Discovered %s - %s', this.config.hostname);
+    this.log.info('Discovered %s', this.config.hostname);
     this.createContactSensor(device);
   }
 
