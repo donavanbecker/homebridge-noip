@@ -27,17 +27,12 @@
         "title": "Hostname",
         "type": "string"
       },
-      "options": {
-        "type": "object",
-        "properties": {
-          "refreshRate": {
-            "title": "Refresh Rate",
-            "type": "number",
-            "minimum": 1800,
-            "placeholder": 1800,
-            "description": "Indicates the number of seconds between polls of the No-IP service."
-          }
-        }
+      "refreshRate": {
+        "title": "Refresh Rate",
+        "type": "number",
+        "minimum": 1800,
+        "placeholder": 1800,
+        "description": "Indicates the number of seconds between polls of the No-IP service."
       }
     }
   },
@@ -58,7 +53,7 @@
       "expandable": true,
       "expanded": true,
       "items": [
-          "hostname"
+        "hostname"
       ]
     },
     {
