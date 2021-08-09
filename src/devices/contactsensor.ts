@@ -103,7 +103,7 @@ export class ContactSensor {
       //this.noip.start(this.platform.config.refreshRate);
       this.noip.update();
       this.noip.on('success', (isChanged, ip) => {
-        this.platform.log.info('Updated :', isChanged, ip);
+        this.platform.log.debug('Updated :', isChanged, ip);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
         this.success = isChanged;
       });
