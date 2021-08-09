@@ -9,10 +9,6 @@ export const PLATFORM_NAME = 'NoIP';
  */
 export const PLUGIN_NAME = 'homebridge-noip';
 
-/**
- * This is the main url used to access honeywell API
- */
-export const updateDomain = 'dynupdate.no-ip.com/nic/update';
 
 //Config
 export interface NoIPPlatformConfig extends PlatformConfig {
@@ -20,13 +16,4 @@ export interface NoIPPlatformConfig extends PlatformConfig {
   username?: string;
   password?: string;
   refreshRate?: number;
-  pushRate?: number;
-  hide_device?: string;
-  debug?: boolean;
-  disablePlugin?: boolean;
-}
-
-export interface AxiosRequestConfig {
-  params?: Record<string, unknown>;
-  headers?: any;
 }

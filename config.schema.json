@@ -15,12 +15,12 @@
         "required": true
       },
       "username": {
-        "title": "Consumer Key",
+        "title": "NoIP Username/Email",
         "type": "string",
         "required": true
       },
       "password": {
-        "title": "Consumer Secret",
+        "title": "NoIP Password",
         "type": "string"
       },
       "hostname": {

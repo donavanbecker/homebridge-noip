@@ -57,7 +57,7 @@ Remove any sensitive information, such as your homebridge-noip consumerKey/ cons
 - **Node.js Version**: <!-- node -v -->
 - **NPM Version**: <!-- npm -v -->
 - **Homebridge Version**: <!-- homebridge -V -->
-- **Homebridge Honeywell Home Plugin Version**:
+- **Homebridge NoIP Plugin Version**:
 - **Homebridge Config UI X Plugin Version**:
 - **Operating System**: <!-- Raspbian / Ubuntu / Debian / Windows / macOS / Docker -->
 

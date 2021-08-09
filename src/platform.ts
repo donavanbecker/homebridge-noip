@@ -1,5 +1,6 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
+import publicIp from 'public-ip';
 import { ContactSensor } from './devices/contactsensor';
 
 /**
@@ -137,7 +138,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.context.device = device;
-        existingAccessory.context.serialNumber = '127.0.0.1';
+        existingAccessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
+        this.log.debug(await publicIp.v4());
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -163,7 +165,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
-      accessory.context.serialNumber = '127.0.0.1';
+      accessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
+      this.log.debug(await publicIp.v4());
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory

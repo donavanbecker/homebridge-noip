@@ -35,7 +35,7 @@ export class ContactSensor {
       pass: this.platform.config.password,
     });
 
-    // this is subject we use to track when we need to POST changes to the Honeywell API
+    // this is subject we use to track when we need to POST changes to the NoIP API
     this.doSensorUpdate = new Subject();
     this.SensorUpdateInProgress = false;
 
@@ -78,7 +78,7 @@ export class ContactSensor {
   }
 
   /**
-   * Parse the device status from the honeywell api
+   * Parse the device status from the noip api
    */
   parseStatus() {
     switch (this.success){
@@ -96,7 +96,7 @@ export class ContactSensor {
   }
 
   /**
-   * Asks the Honeywell Home API for the latest device information
+   * Asks the NoIP API for the latest device information
    */
   async refreshStatus() {
     try {
