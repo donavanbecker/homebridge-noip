@@ -18,7 +18,7 @@ assignees: 'donavanbecker'
 
 ```
 Show the Homebridge logs here. If using Homebridge Config-UI-X, you can easly downlaod your log by visiting the log page on the UI and Clicking the Download Icon in the top right.
-Remove any sensitive information, such as your homebridge-honeywell-home refreshToken.
+Remove any sensitive information, such as your homebridge-noip refreshToken.
 
 Please Turn on Debug Mode before submitting your Issue so more logs can be shared to fix the issue being submitted.
 
@@ -31,7 +31,7 @@ There is a hidden `"devicediscovery: true"` option that you can add to your conf
 
 ```json
 Paste your homebridge config.json here.
-Remove any sensitive information, such as your homebridge-honeywell-home consumerKey/ consumerSecret / refreshToken.
+Remove any sensitive information, such as your homebridge-noip consumerKey/ consumerSecret / refreshToken.
 
 ***Read and Paste over this Text the Text Above^^^^^^
 ```
@@ -49,7 +49,7 @@ Remove any sensitive information, such as your homebridge-honeywell-home consume
 - **Node.js Version**: <!-- node -v -->
 - **NPM Version**: <!-- npm -v -->
 - **Homebridge Version**: <!-- homebridge -V -->
-- **Homebridge Honeywell Home Plugin Version**:
+- **Homebridge NoIP Plugin Version**:
 - **Homebridge Config UI X Plugin Version**:
 - **Operating System**: <!-- Raspbian / Ubuntu / Debian / Windows / macOS / Docker -->
 

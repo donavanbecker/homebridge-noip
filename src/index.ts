@@ -1,10 +1,10 @@
 import { API } from 'homebridge';
 import { PLATFORM_NAME } from './settings';
-import { HoneywellHomePlatform } from './platform';
+import { NoIPPlatform } from './platform';
 
 /**
  * This method registers the platform with Homebridge
  */
 export = (api: API): void => {
-  api.registerPlatform(PLATFORM_NAME, HoneywellHomePlatform);
+  api.registerPlatform(PLATFORM_NAME, NoIPPlatform);
 };
