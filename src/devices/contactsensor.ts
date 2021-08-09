@@ -2,7 +2,7 @@ import { Service, PlatformAccessory, HAPStatus, CharacteristicValue } from 'home
 import { NoIPPlatform } from '../platform';
 import { interval, Subject } from 'rxjs';
 import { skipWhile } from 'rxjs/operators';
-import NoIP from '@masx200/no-ip-ddns-ipv6';
+import NoIP from 'no-ip';
 //import { HTTP } from '../settings';
 //import os from 'os';
 
@@ -100,13 +100,15 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
-      //this.noip.start(this.platform.config.refreshRate);
-      this.noip.update();
+      this.noip.on('error', (err) => {
+        this.platform.log.error(err);
+      });
       this.noip.on('success', (isChanged, ip) => {
         this.platform.log.debug('Updated :', isChanged, ip);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
         this.success = isChanged;
       });
+      this.noip.update();
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e) {

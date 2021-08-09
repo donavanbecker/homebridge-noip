@@ -37,7 +37,7 @@
     "No-IP"
   ],
   "dependencies": {
-    "@masx200/no-ip-ddns-ipv6": "^2.0.1",
+    "no-ip": "^1.0.2",
     "rxjs": "^7.3.0",
     "public-ip": "^4.0.4",
     "@homebridge/plugin-ui-utils": "^0.0.19"
