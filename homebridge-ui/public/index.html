@@ -35,9 +35,6 @@
    </div>
 </div>
 <div id="menuWrapper" class="btn-group w-100 mb-0" role="group" aria-label="UI Menu" style="display: none;">
-   <button type="button" class="btn btn-primary ml-0" id="menuAccount">
-      Account
-   </button>
    <button type="button" class="btn btn-primary" id="menuSettings">
       Settings
    </button>
@@ -53,27 +50,6 @@
    <button id="disabledEnable" type="button" class="btn btn-link p-0 m-0 float-right">
       Enable
    </button>
-</div>
-<div id="pageAccount" class="mt-4" style="display: none;">
-   <div class="alert alert-warning" style="display: none;" id="validateForm">
-      Please enter both values
-   </div>
-   <div class="alert alert-success" style="display: none;" id="linkSuccess">
-      Config saved, please close this window and restart Homebridge
-   </div>
-   <div class="form-group">
-      <label for="inputConsumerKey">Consumer Key <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" id="inputConsumerKey">
-   </div>
-   <div class="form-group">
-      <label for="inputConsumerSecret">Consumer Secret <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" id="inputConsumerSecret">
-   </div>
-   <div class="form-group text-center">
-      <button type="button" class="btn btn-primary" id="backToIntro">&larr;</button>
-      <button type="button" class="btn btn-primary" id="linkButton">Continue &rarr;</button>
-      <button type="button" class="btn btn-danger" id="unLinkButton">Unlink Account &rarr;</button>
-   </div>
 </div>
 <div id="pageDevices" class="mt-4" style="display: none;">
    <div id="deviceInfo">
@@ -190,7 +166,6 @@
                   }
                   await homebridge.updatePluginConfig(currentConfig)
                   await homebridge.savePluginConfig()
-                  homebridge.toast.success("Successfully Linked Honeywell Home Account", "homebridge-noip")
                   document.getElementById('backToIntro').style.display = 'none'
                   document.getElementById('linkButton').style.display = 'none'
                   document.getElementById('unLinkButton').style.display = 'none'
@@ -203,55 +178,6 @@
                homebridge.toast.error('Try again, or see the console message for info.', 'Error')
             }
          })
-         copyMyText = () => {
-            var textToCopy = document.getElementById("copyMe");
-            textToCopy.select();
-            document.execCommand("copy");
-         }
-         linkAccount = async () => {
-            document.getElementById('validateForm').style.display = 'none'
-            if (
-               !document.getElementById('inputConsumerKey').value ||
-               !document.getElementById('inputConsumerSecret').value
-            ) {
-               document.getElementById('validateForm').style.display = 'block'
-               return
-            }
-            const w = 450;
-            const h = 700;
-            const y = window.top.outerHeight / 2 + window.top.screenY - (h / 2);
-            const x = window.top.outerWidth / 2 + window.top.screenX - (w / 2);
-            const urlToOpen = 'http://' + hostname + ':8585/start?' +
-               'key=' + document.getElementById('inputConsumerKey').value +
-               '&secret=' + document.getElementById('inputConsumerSecret').value +
-               '&host=' + encodeURI(hostname);
-            this.popup = window.open(
-               urlToOpen, 'honeywell-auth',
-               'toolbar=no, location=no, directories=no, status=no, menubar=no scrollbars=no, resizable=no, copyhistory=no, ' +
-               'width=' + w + ', height=' + h + ', top=' + y + ', left=' + x,
-            )
-         }
-         unLinkAccount = async () => {
-            try {
-               document.getElementById('validateForm').style.display = 'none'
-               if (
-                  !document.getElementById('inputConsumerKey').value ||
-                  !document.getElementById('inputConsumerSecret').value
-               ) {
-                  document.getElementById('validateForm').style.display = 'block'
-                  return
-               }
-               delete currentConfig[0].credentials
-               await homebridge.updatePluginConfig(currentConfig)
-               await homebridge.savePluginConfig()
-               document.getElementById('inputConsumerKey').value = ''
-               document.getElementById('inputConsumerSecret').value = ''
-               document.getElementById('unLinkButton').style.display = 'none'
-            } catch (err) {
-               console.error(err)
-               homebridge.toast.error('Try again, or see the console message for info.', 'Error')
-            }
-         }
          showIntro = () => {
             const introLink = document.getElementById('introLink')
             document.getElementById('copyMe').value = 'http://' + hostname + ':8585/'
@@ -259,10 +185,9 @@
                homebridge.showSpinner()
                document.getElementById('pageIntro').style.display = 'none'
                document.getElementById('menuWrapper').style.display = 'inline-flex'
-               showAccount()
+               showSettings()
                homebridge.hideSpinner()
             })
-            document.getElementById('pageAccount').style.display = 'none'
             document.getElementById('menuWrapper').style.display = 'none'
             document.getElementById('pageIntro').style.display = 'block'
          }
@@ -273,12 +198,9 @@
             document.getElementById('menuHome').classList.add('btn-primary')
             document.getElementById('menuDevices').classList.add('btn-elegant')
             document.getElementById('menuDevices').classList.remove('btn-primary')
-            document.getElementById('menuAccount').classList.remove('btn-elegant')
-            document.getElementById('menuAccount').classList.add('btn-primary')
             document.getElementById('menuSettings').classList.remove('btn-elegant')
             document.getElementById('menuSettings').classList.add('btn-primary')
             document.getElementById('pageSupport').style.display = 'none'
-            document.getElementById('pageAccount').style.display = 'none'
             document.getElementById('pageDevices').style.display = 'block'
             const cachedAccessories =
                typeof homebridge.getCachedAccessories === 'function'
@@ -332,11 +254,8 @@
             document.getElementById('menuDevices').classList.add('btn-primary')
             document.getElementById('menuSettings').classList.remove('btn-elegant')
             document.getElementById('menuSettings').classList.add('btn-primary')
-            document.getElementById('menuAccount').classList.remove('btn-elegant')
-            document.getElementById('menuAccount').classList.add('btn-primary')
             document.getElementById('pageSupport').style.display = 'block'
             document.getElementById('pageDevices').style.display = 'none'
-            document.getElementById('pageAccount').style.display = 'none'
             homebridge.hideSpinner()
          }
          showSettings = () => {
@@ -347,63 +266,9 @@
             document.getElementById('menuDevices').classList.add('btn-primary')
             document.getElementById('menuSettings').classList.add('btn-elegant')
             document.getElementById('menuSettings').classList.remove('btn-primary')
-            document.getElementById('menuAccount').classList.remove('btn-elegant')
-            document.getElementById('menuAccount').classList.add('btn-primary')
             document.getElementById('pageSupport').style.display = 'none'
             document.getElementById('pageDevices').style.display = 'none'
-            document.getElementById('pageAccount').style.display = 'none'
             homebridge.showSchemaForm()
-            homebridge.hideSpinner()
-         }
-         showAccount = () => {
-            homebridge.showSpinner()
-            const backToIntro = document.getElementById('backToIntro')
-            backToIntro.addEventListener('click', () => {
-               showIntro()
-            })
-            backToIntro.style.display = 'none'
-            const linkButton = document.getElementById('linkButton')
-            linkButton.addEventListener('click', () => {
-               linkAccount()
-            })
-            const unLinkButton = document.getElementById('unLinkButton')
-            unLinkButton.style.display = 'none'
-            unLinkButton.addEventListener('click', () => {
-               unLinkAccount()
-            })
-            document.getElementById('linkSuccess').style.display = 'none'
-            homebridge.hideSchemaForm()
-            document.getElementById('menuHome').classList.remove('btn-elegant')
-            document.getElementById('menuHome').classList.add('btn-primary')
-            document.getElementById('menuDevices').classList.remove('btn-elegant')
-            document.getElementById('menuDevices').classList.add('btn-primary')
-            document.getElementById('menuAccount').classList.add('btn-elegant')
-            document.getElementById('menuAccount').classList.remove('btn-primary')
-            document.getElementById('menuSettings').classList.remove('btn-elegant')
-            document.getElementById('menuSettings').classList.add('btn-primary')
-            document.getElementById('pageSupport').style.display = 'none'
-            document.getElementById('pageDevices').style.display = 'none'
-            document.getElementById('pageAccount').style.display = 'block'
-            document.getElementById('linkButton').style.display = 'inline-block'
-            let isRelink = false
-            if (currentConfig[0] && currentConfig[0].credentials) {
-               const key = currentConfig[0].credentials.consumerKey || ''
-               const secret = currentConfig[0].credentials.consumerSecret || ''
-               document.getElementById('inputConsumerKey').value = key
-               document.getElementById('inputConsumerSecret').value = secret
-               if (key && secret) {
-                  isRelink = true
-                  document.getElementById('unLinkButton').style.display = 'inline-block'
-               } else {
-                  document.getElementById('unLinkButton').style.display = 'none'
-               }
-            }
-            document.getElementById('linkButton').innerHTML = isRelink
-               ? 'Relink Account &rarr;'
-               : 'Link Account &rarr;'
-            if (!isRelink) {
-               document.getElementById('backToIntro').style.display = 'inline-block'
-            }
             homebridge.hideSpinner()
          }
          showDisabledBanner = () => {
@@ -418,13 +283,12 @@
             homebridge.hideSpinner()
          }
          menuHome.addEventListener('click', () => showSupport())
-         menuAccount.addEventListener('click', () => showAccount())
          menuDevices.addEventListener('click', () => showDevices())
          menuSettings.addEventListener('click', () => showSettings())
          disabledEnable.addEventListener('click', () => enablePlugin())
          if (currentConfig.length) {
             document.getElementById('menuWrapper').style.display = 'inline-flex'
-            showAccount()
+            showSettings()
             if (currentConfig[0].disablePlugin) {
                showDisabledBanner()
             }

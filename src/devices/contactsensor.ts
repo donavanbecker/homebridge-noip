@@ -2,7 +2,9 @@ import { Service, PlatformAccessory, HAPStatus, CharacteristicValue } from 'home
 import { NoIPPlatform } from '../platform';
 import { interval, Subject } from 'rxjs';
 import { skipWhile } from 'rxjs/operators';
-import { HTTP, location, LeakDevice } from '../settings';
+import NoIP from '@masx200/no-ip-ddns-ipv6';
+//import { HTTP } from '../settings';
+//import os from 'os';
 
 /**
  * Platform Accessory
@@ -16,6 +18,8 @@ export class ContactSensor {
 
   SensorUpdateInProgress!: boolean;
   doSensorUpdate;
+  success!: boolean;
+  noip: any;
 
   constructor(
     private readonly platform: NoIPPlatform,
@@ -24,6 +28,12 @@ export class ContactSensor {
   ) {
     // default placeholders
     this.ContactSensorState;
+    this.success = true;
+    this.noip = new NoIP({
+      hostname: this.platform.config.hostname,
+      user: this.platform.config.username,
+      pass: this.platform.config.password,
+    });
 
     // this is subject we use to track when we need to POST changes to the Honeywell API
     this.doSensorUpdate = new Subject();
@@ -32,9 +42,9 @@ export class ContactSensor {
     // set accessory information
     accessory
       .getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'Honeywell')
-      .setCharacteristic(this.platform.Characteristic.Model, device.deviceType)
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, device.deviceID)
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'No-IP')
+      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.model)
+      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.serialNumber)
       .setCharacteristic(this.platform.Characteristic.FirmwareRevision, accessory.context.firmwareRevision)
       .getCharacteristic(this.platform.Characteristic.FirmwareRevision).updateValue(accessory.context.firmwareRevision);
 
@@ -55,18 +65,12 @@ export class ContactSensor {
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/
 
-    // Do initial device parse
-    this.parseStatus();
-
-    // Set Charging State
-    this.service.setCharacteristic(this.platform.Characteristic.ContactSensorState, 2);
-
     // Retrieve initial values and updateHomekit
     this.refreshStatus();
     this.updateHomeKitCharacteristics();
 
     // Start an update interval
-    interval(this.platform.config.options!.refreshRate! * 1000)
+    interval(this.platform.config.refreshRate! * 1000)
       .pipe(skipWhile(() => this.SensorUpdateInProgress))
       .subscribe(() => {
         this.refreshStatus();
@@ -77,17 +81,15 @@ export class ContactSensor {
    * Parse the device status from the honeywell api
    */
   parseStatus() {
-    // Set Sensor State
-    switch (this.device.isAlive) {
-      case true:
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+    switch (this.success){
+      case false:
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
         break;
       default:
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
     }
-
     this.platform.log.debug(
-      'CS %s - %s°, %s%',
+      '%s - %s°',
       this.accessory.displayName,
       this.ContactSensorState,
     );
@@ -98,20 +100,22 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
-      this.device = (
-        await this.platform.axios.get(`${HTTP}/waterLeakDetectors/${this.device.deviceID}`, {
-        })
-      ).data;
-      this.platform.log.debug('CS %s - ', this.accessory.displayName, JSON.stringify(this.device));
+      //this.noip.start(this.platform.config.refreshRate);
+      this.noip.update();
+      this.noip.on('success', (isChanged, ip) => {
+        this.platform.log.info('Updated :', isChanged, ip);
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+        this.success = isChanged;
+      });
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e) {
       this.platform.log.error(
-        'CS - Failed to update status of',
-        this.device.userDefinedDeviceName,
+        'Failed to update status of',
+        this.accessory.displayName,
         JSON.stringify(e.message),
-        this.platform.log.debug('CS %s - ', this.accessory.displayName, JSON.stringify(e)),
       );
+      this.platform.log.debug('%s - ', this.accessory.displayName, JSON.stringify(e));
       this.apiError(e);
     }
   }
