@@ -93,6 +93,7 @@ export class ContactSensor {
         this.platform.debug(`IP: ${ip}`);
         this.platform.debug(`Has IP Changed: ${isChanged}`);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+        this.service.getCharacteristic(this.platform.Characteristic.ContactSensorState).updateValue(this.ContactSensorState);
       });
       this.noip.update();
       this.parseStatus();
