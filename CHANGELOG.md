@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.1.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.0.0...v1.0.1) (2021-09-17)
+
+### Changes
+
+- Add Plugin debug config.
+
 ## [Version 1.0.0](https://github.com/donavanbecker/homebridge-noip/compare/v0.1.0...v1.0.0) (2021-08-09)
 
 ### Changes

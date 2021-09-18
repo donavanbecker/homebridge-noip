@@ -20,7 +20,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   version = require('../package.json').version // eslint-disable-line @typescript-eslint/no-var-requires
 
   constructor(public readonly log: Logger, public readonly config: NoIPPlatformConfig, public readonly api: API) {
-    this.log.debug('Finished initializing platform:', this.config.name);
+    this.debug('Finished initializing platform:', this.config.name);
     // only load if configured
     if (!this.config) {
       return;
@@ -35,10 +35,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // verify the config
     try {
       this.verifyConfig();
-      this.log.debug('Config OK');
-    } catch (e) {
+      this.debug('Config OK');
+    } catch (e: any) {
       this.log.error(JSON.stringify(e.message));
-      this.log.debug(JSON.stringify(e));
+      this.debug(JSON.stringify(e));
       return;
     }
 
@@ -53,9 +53,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // run the method to discover / register your devices as accessories
       try {
         this.discoverDevices();
-      } catch (e) {
+      } catch (e: any) {
         this.log.error('Failed to Discover Devices.', JSON.stringify(e.message));
-        this.log.debug(JSON.stringify(e));
+        this.debug(JSON.stringify(e));
       }
     });
   }
@@ -139,14 +139,14 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
-        this.log.debug(await publicIp.v4());
+        this.debug(await publicIp.v4());
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         new ContactSensor(this, existingAccessory, device);
-        this.log.debug(`UDID: ${device}`);
+        this.debug(`UDID: ${device}`);
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
@@ -166,13 +166,13 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
       accessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
-      this.log.debug(await publicIp.v4());
+      this.debug(await publicIp.v4());
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
-      this.log.debug(`Thermostat UDID: ${device}`);
+      this.debug(`Thermostat UDID: ${device}`);
 
       // link the accessory to your platform
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
@@ -192,5 +192,17 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // remove platform accessories when no longer present
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
     this.log.warn('Removing existing accessory from cache:', existingAccessory.displayName);
+  }
+
+  /**
+   * If debug level logging is turned on, log to log.info
+   * Otherwise send debug logs to log.debug
+   */
+  debug(...log: any[]) {
+    if (this.config.debug) {
+      this.log.info('[DEBUG]', String(...log));
+    } else{
+      this.log.debug(String(...log));
+    }
   }
 }

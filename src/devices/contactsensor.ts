@@ -1,4 +1,4 @@
-import { Service, PlatformAccessory, HAPStatus, CharacteristicValue } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 import { NoIPPlatform } from '../platform';
 import { interval } from 'rxjs';
 import { skipWhile } from 'rxjs/operators';
@@ -15,7 +15,6 @@ export class ContactSensor {
   private service: Service;
 
   ContactSensorState!: CharacteristicValue;
-  success!: boolean;
   noip: any;
 
   SensorUpdateInProgress!: boolean;
@@ -26,8 +25,7 @@ export class ContactSensor {
     public device,
   ) {
     // default placeholders
-    this.ContactSensorState;
-    this.success = false;
+    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
     this.noip = new NoIP({
       hostname: this.platform.config.hostname,
       user: this.platform.config.username,
@@ -79,18 +77,7 @@ export class ContactSensor {
    * Parse the device status from the noip api
    */
   parseStatus() {
-    switch (this.success){
-      case false:
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
-        break;
-      default:
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
-    }
-    this.platform.log.debug(
-      '%s - %s°',
-      this.accessory.displayName,
-      this.ContactSensorState,
-    );
+    this.platform.debug(`${this.accessory.displayName} - ${this.ContactSensorState}`);
   }
 
   /**
@@ -100,23 +87,23 @@ export class ContactSensor {
     try {
       this.noip.on('error', (err: string) => {
         this.platform.log.error(err);
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
       });
       this.noip.on('success', (isChanged: boolean, ip: any) => {
-        this.platform.log.debug('IP:', ip);
-        this.platform.log.debug('Has IP Changed:', isChanged);
+        this.platform.debug(`IP: ${ip}`);
+        this.platform.debug(`Has IP Changed: ${isChanged}`);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
-        this.success = isChanged;
       });
       this.noip.update();
       this.parseStatus();
       this.updateHomeKitCharacteristics();
-    } catch (e) {
+    } catch (e: any) {
       this.platform.log.error(
         'Failed to update status of',
         this.accessory.displayName,
         JSON.stringify(e.message),
       );
-      this.platform.log.debug('%s - ', this.accessory.displayName, JSON.stringify(e));
+      this.platform.debug(`${this.accessory.displayName} - ${JSON.stringify(e)}`);
       this.apiError(e);
     }
   }
@@ -132,6 +119,5 @@ export class ContactSensor {
 
   public apiError(e: any) {
     this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, e);
-    throw new this.platform.api.hap.HapStatusError(HAPStatus.OPERATION_TIMED_OUT);
   }
 }
