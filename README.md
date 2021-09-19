@@ -25,19 +25,16 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 
 1. Login / create an account at https://noip.com/
     - If you haven't already you can also create your No-IP hostname here as well.
-2. a
-3. a
 
 <p align="center">
 
-<img src="https://user-images.githubusercontent.com/3979615/88920827-d5b97680-d2b0-11ea-9002-15209eebd995.png" width="600px">
+<img src="https://user-images.githubusercontent.com/9875439/133934622-05a9c19e-c5ba-46ee-b0db-0748420813d7.png" width="450px">
 
 </p>
 
-6. Login to your [https://noip.com](https://noip.com).
-10. Click Confirm
-11. Click Save
-12. Restart Homebridge
+2. Type in your NoIP Username, Password, and Hostname into the Plugin Setting UI
+3. Click Save
+4. Restart Homebridge
 
 ## Supported No-IP Features
 
