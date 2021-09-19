@@ -25,7 +25,7 @@ export class ContactSensor {
     public device,
   ) {
     // default placeholders
-    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
     this.noip = new NoIP({
       hostname: this.platform.config.hostname,
       user: this.platform.config.username,
@@ -87,12 +87,13 @@ export class ContactSensor {
     try {
       this.noip.on('error', (err: string) => {
         this.platform.log.error(err);
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
       });
       this.noip.on('success', (isChanged: boolean, ip: any) => {
         this.platform.debug(`IP: ${ip}`);
         this.platform.debug(`Has IP Changed: ${isChanged}`);
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+        this.service.getCharacteristic(this.platform.Characteristic.ContactSensorState).updateValue(this.ContactSensorState);
       });
       this.noip.update();
       this.parseStatus();
