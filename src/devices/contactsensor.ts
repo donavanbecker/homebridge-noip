@@ -96,6 +96,7 @@ export class ContactSensor {
         this.service.getCharacteristic(this.platform.Characteristic.ContactSensorState).updateValue(this.ContactSensorState);
       });
       this.noip.update();
+      this.noip.setMaxListeners( 10 );
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
