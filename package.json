@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge No-IP",
   "name": "homebridge-noip",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "no-ip": "^1.0.2",
-    "rxjs": "^7.3.0",
+    "rxjs": "^7.3.1",
     "public-ip": "^4.0.4",
     "@homebridge/plugin-ui-utils": "^0.0.19"
   },
