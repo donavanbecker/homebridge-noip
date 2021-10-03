@@ -85,6 +85,7 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
+      this.noip.setMaxListeners(11);
       this.noip.on('error', (err: string) => {
         this.platform.log.error(err);
         this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
