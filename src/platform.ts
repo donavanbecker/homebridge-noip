@@ -146,7 +146,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         new ContactSensor(this, existingAccessory, device);
-        this.debug(`UDID: ${device}`);
+        this.debug(`uuid: ${device}`);
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
@@ -172,7 +172,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
-      this.debug(`Thermostat UDID: ${device}`);
+      this.debug(`uuid: ${device}`);
 
       // link the accessory to your platform
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
