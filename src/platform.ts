@@ -17,7 +17,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   debugMode!: boolean;
   device!: string;
-  version = require('../package.json').version // eslint-disable-line @typescript-eslint/no-var-requires
+  version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
 
   constructor(public readonly log: Logger, public readonly config: NoIPPlatformConfig, public readonly api: API) {
     this.debug('Finished initializing platform:', this.config.name);
