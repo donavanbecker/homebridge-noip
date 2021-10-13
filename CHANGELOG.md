@@ -2,11 +2,17 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.2.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.2...v1.2.0) (2021-10-13)
+
+### Changes
+
+- Removed dependency for `no-ip` and implemented built in noip updater. 
+
 ## [Version 1.1.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.1...v1.1.2) (2021-10-02)
 
 ### Changes
 
-= Fixed Error: ```Possible EventEmitter memory leak detected. 11 error listeners added to [NoIP]```
+- Potential Fix for Error: ```Possible EventEmitter memory leak detected. 11 error listeners added to [NoIP]```
 
 ## [Version 1.1.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.0...v1.1.1) (2021-09-19)
 

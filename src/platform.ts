@@ -1,5 +1,6 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import publicIp from 'public-ip';
 import { ContactSensor } from './devices/contactsensor';
 
@@ -15,7 +16,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
 
-  debugMode!: boolean;
+  public axios: AxiosInstance = axios.create({
+    responseType!: 'text',
+  });
+
   device!: string;
   version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -42,7 +46,14 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       return;
     }
 
-    this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
+    // setup axios interceptor to add headers / api key to each request
+    this.axios.interceptors.request.use((request: AxiosRequestConfig) => {
+      request.headers = request.headers || {};
+      request.params = request.params || {};
+      return request;
+    });
+
+    //this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,

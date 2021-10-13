@@ -1,10 +1,9 @@
-import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, IPv4Address } from 'homebridge';
 import { NoIPPlatform } from '../platform';
-import { interval } from 'rxjs';
-import { skipWhile } from 'rxjs/operators';
-import NoIP from 'no-ip';
-//import { HTTP } from '../settings';
-//import os from 'os';
+import { interval, throwError } from 'rxjs';
+import { skipWhile, timeout } from 'rxjs/operators';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import publicIp from 'public-ip';
 
 /**
  * Platform Accessory
@@ -16,8 +15,12 @@ export class ContactSensor {
 
   ContactSensorState!: CharacteristicValue;
   noip: any;
+  ip!: IPv4Address;
+  response!: AxiosResponse<any>;
 
   SensorUpdateInProgress!: boolean;
+  options!: AxiosRequestConfig<any>;
+  interval;
 
   constructor(
     private readonly platform: NoIPPlatform,
@@ -25,12 +28,7 @@ export class ContactSensor {
     public device,
   ) {
     // default placeholders
-    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
-    this.noip = new NoIP({
-      hostname: this.platform.config.hostname,
-      user: this.platform.config.username,
-      pass: this.platform.config.password,
-    });
+    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
     // this is subject we use to track when we need to POST changes to the NoIP API
     this.SensorUpdateInProgress = false;
@@ -66,7 +64,7 @@ export class ContactSensor {
     this.updateHomeKitCharacteristics();
 
     // Start an update interval
-    interval(this.platform.config.refreshRate! * 1000)
+    this.interval = interval(this.platform.config.refreshRate! * 1000)
       .pipe(skipWhile(() => this.SensorUpdateInProgress))
       .subscribe(() => {
         this.refreshStatus();
@@ -77,6 +75,11 @@ export class ContactSensor {
    * Parse the device status from the noip api
    */
   parseStatus() {
+    if (this.response.status === 200) {
+      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+    } else {
+      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+    }
     this.platform.debug(`${this.accessory.displayName} - ${this.ContactSensorState}`);
   }
 
@@ -85,18 +88,18 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
-      this.noip.setMaxListeners(11);
-      this.noip.on('error', (err: string) => {
-        this.platform.log.error(err);
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
-      });
-      this.noip.on('success', (isChanged: boolean, ip: any) => {
-        this.platform.debug(`IP: ${ip}`);
-        this.platform.debug(`Has IP Changed: ${isChanged}`);
-        this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
-        this.service.getCharacteristic(this.platform.Characteristic.ContactSensorState).updateValue(this.ContactSensorState);
-      });
-      this.noip.update();
+      await this.NoIP();
+      this.platform.debug(JSON.stringify(this.options));
+      this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
+      this.platform.debug(this.response.data);
+      const data = this.response.data.trim();
+      const f = data.match(/good|nochg/g);
+      if (f) {
+        this.platform.debug(`${this.accessory.displayName}, ${f[0]}`);
+        this.status(f, data);
+      } else {
+        this.platform.log.error(`${this.accessory.displayName}, error: ${data}`);
+      }
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
@@ -108,6 +111,95 @@ export class ContactSensor {
       this.platform.debug(`${this.accessory.displayName} - ${JSON.stringify(e)}`);
       this.apiError(e);
     }
+  }
+
+  private status(f: any, data: any) {
+    switch (f[0]) {
+      case 'nochg':
+        this.platform.debug(`IP Address has not updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
+        break;
+      case 'good':
+        this.platform.log.warn(`IP Address has been updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
+        break;
+      case 'nohost':
+        this.platform.log.error('Hostname supplied does not exist under specified account, '
+          + 'client exit and require user to enter new login credentials before performing an additional request.');
+        this.timeout();
+        break;
+      case 'badauth':
+        this.platform.log.error('Invalid username password combination.');
+        this.timeout();
+        break;
+      case 'badagent':
+        this.platform.log.error('Client disabled. Client should exit and not perform any more updates without user intervention. ');
+        this.timeout();
+        break;
+      case '!donator':
+        this.platform.log.error('An update request was sent, '
+          + 'including a feature that is not available to that particular user such as offline options.');
+        this.timeout();
+        break;
+      case 'abuse':
+        this.platform.log.error('Username is blocked due to abuse. '
+          + 'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. '
+          + 'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.');
+        this.timeout();
+        break;
+      case '911':
+        this.platform.log.error('A fatal error on our side such as a database outage. Retry the update no sooner than 30 minutes. ');
+        this.timeout();
+        break;
+      default:
+        this.platform.debug(data);
+    }
+  }
+
+  private timeout() {
+    this.interval.pipe(
+      timeout({
+        each: 1000,
+        with: () => throwError(() => new Error('nohost')),
+      }),
+    )
+      .subscribe({
+        error: this.platform.log.error,
+      });
+  }
+
+  private async NoIP() {
+    const opts = {
+      user: this.platform.config.username,
+      pass: this.platform.config.password,
+      hostname: this.platform.config.hostname,
+    };
+    if (!opts.hostname || !opts.pass) {
+      throw Error('Missing params!');
+    }
+
+    if (!this.validateEmail(opts.user)) {
+      throw Error('Provide a valid Email');
+    }
+
+    this.options = {
+      responseType: 'text',
+      headers: {
+        'user-agent': 'Homebridge-NoIP/v' + this.platform.version,
+      },
+      auth: {
+        username: opts.user!,
+        password: opts.pass,
+      },
+      params: {
+        hostname: opts.hostname,
+        myip: await publicIp.v4(),
+      },
+    };
+  }
+
+  validateEmail(email: string | undefined) {
+    // eslint-disable-next-line max-len
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   }
 
   /**
