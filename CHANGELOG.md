@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changes
 
-- Removed dependency for `no-ip` and implemented built in noip updater. 
+- Removed dependency for `no-ip` and implemented built in noip updater.
 
 ## [Version 1.1.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.1...v1.1.2) (2021-10-02)
 
