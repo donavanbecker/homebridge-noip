@@ -35,7 +35,7 @@
         "description": "Indicates the number of seconds between polls of the No-IP service."
       },
       "debug": {
-        "title": "Logging Setting",
+        "title": "Logging Settings",
         "type": "string",
         "description": "Enble 'Device' or 'Debug' logging.",
         "oneOf": [
@@ -57,7 +57,7 @@
       "disablePlugin": {
         "title": "Disable Plugin",
         "type": "boolean",
-        "description": "ONLY USE: Disable plugin to remove accessories from cache."
+        "description": "DO NOT USE UNLESS YOU WANT TO REMOVE ACCESSORIES FROM CACHE."
       }
     }
   },
