@@ -20,7 +20,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     responseType!: 'text',
   });
 
-  device!: string;
   version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
 
   constructor(public readonly log: Logger, public readonly config: NoIPPlatformConfig, public readonly api: API) {
@@ -92,7 +91,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      */
     this.config.debug;
     this.config.disablePlugin;
-    this.config.hide_device;
 
 
     if (this.config.refreshRate! < 1800) {
@@ -139,15 +137,11 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
     if (existingAccessory) {
       // the accessory already exists
-      if (
-        !this.config.disablePlugin
-      ) {
-        this.log.info(
-          'Restoring existing accessory from cache:',
-          existingAccessory.displayName,
-        );
+      if (!this.config.disablePlugin) {
+        this.log.info(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
+        existingAccessory.displayName = device;
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
         this.debug(await publicIp.v4());
@@ -161,14 +155,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
-    } else if (
-      !this.config.disablePlugin
-    ) {
+    } else if (!this.config.disablePlugin) {
       // the accessory does not yet exist, so we need to create it
-      this.log.info(
-        'Adding new accessory:',
-        device,
-      );
+      this.log.info(`Adding new accessory: ${device}`);
 
       // create a new accessory
       const accessory = new this.api.platformAccessory(device, uuid);
@@ -189,12 +178,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessories.push(accessory);
     } else {
-      if (this.config.devicediscovery) {
-        this.log.error(
-          'Unable to Register new device:',
-          device,
-        );
-        this.log.error('Check Config to see if DeviceID is being Hidden.');
+      if (this.config.debug === 'device') {
+        this.log.error(`Unable to Register new device: ${device}`);
+        this.log.error(`Check Config, Plugin Disabled: ${this.config.disablePlugin}`);
       }
     }
   }
@@ -208,11 +194,24 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   /**
    * If debug level logging is turned on, log to log.info
    * Otherwise send debug logs to log.debug
+   * this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
    */
   debug(...log: any[]) {
-    if (this.config.debug) {
+    if (this.config.debug === 'debug') {
       this.log.info('[DEBUG]', String(...log));
-    } else{
+    } else {
+      this.log.debug(String(...log));
+    }
+  }
+
+  /**
+   * If device level logging is turned on, log to log.warn
+   * Otherwise send debug logs to log.debug
+   */
+  device(...log: any[]) {
+    if (this.config.debug === 'device') {
+      this.log.warn('[DEVICE]', String(...log));
+    } else {
       this.log.debug(String(...log));
     }
   }
