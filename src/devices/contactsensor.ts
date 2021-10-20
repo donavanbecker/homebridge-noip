@@ -80,7 +80,7 @@ export class ContactSensor {
     } else {
       this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
     }
-    this.platform.debug(`${this.accessory.displayName} - ${this.ContactSensorState}`);
+    this.platform.device(`${this.accessory.displayName} - ${this.ContactSensorState}`);
   }
 
   /**
@@ -89,13 +89,13 @@ export class ContactSensor {
   async refreshStatus() {
     try {
       await this.NoIP();
-      this.platform.debug(JSON.stringify(this.options));
+      this.platform.device(JSON.stringify(this.options));
       this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
-      this.platform.debug(this.response.data);
+      this.platform.device(this.response.data);
       const data = this.response.data.trim();
       const f = data.match(/good|nochg/g);
       if (f) {
-        this.platform.debug(`${this.accessory.displayName}, ${f[0]}`);
+        this.platform.device(`${this.accessory.displayName}, ${f[0]}`);
         this.status(f, data);
       } else {
         this.platform.log.error(`${this.accessory.displayName}, error: ${data}`);
@@ -103,12 +103,8 @@ export class ContactSensor {
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
-      this.platform.log.error(
-        'Failed to update status of',
-        this.accessory.displayName,
-        JSON.stringify(e.message),
-      );
-      this.platform.debug(`${this.accessory.displayName} - ${JSON.stringify(e)}`);
+      this.platform.log.error(`${this.accessory.displayName} failed to update status, Error Message: ${JSON.stringify(e.message)}`);
+      this.platform.debug(`${this.accessory.displayName}, Error: ${JSON.stringify(e)}`);
       this.apiError(e);
     }
   }
@@ -116,7 +112,7 @@ export class ContactSensor {
   private status(f: any, data: any) {
     switch (f[0]) {
       case 'nochg':
-        this.platform.debug(`IP Address has not updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
+        this.platform.device(`IP Address has not updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
         break;
       case 'good':
         this.platform.log.warn(`IP Address has been updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
@@ -206,8 +202,11 @@ export class ContactSensor {
    * Updates the status for each of the HomeKit Characteristics
    */
   updateHomeKitCharacteristics() {
-    if (this.ContactSensorState !== undefined) {
+    if (this.ContactSensorState === undefined) {
+      this.platform.debug(`Thermostat ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
+    } else {
       this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, this.ContactSensorState);
+      this.platform.device(`Thermostat ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
     }
   }
 

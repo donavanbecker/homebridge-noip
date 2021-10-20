@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.2.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.0...v1.2.1) (2021-10-20)
+
+### Changes
+
+- Update Plugin Debug Logging Config Setting to show more logs and added Device Logging option.
+- Housekeeping and updated dependencies.
+
 ## [Version 1.2.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.2...v1.2.0) (2021-10-13)
 
 ### Changes
