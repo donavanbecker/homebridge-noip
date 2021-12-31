@@ -43,7 +43,7 @@
   "dependencies": {
     "rxjs": "^7.5.1",
     "axios": "^0.24.0",
-    "public-ip": "^5.0.0",
+    "public-ip": "^4.0.4",
     "@homebridge/plugin-ui-utils": "^0.0.19"
   },
   "devDependencies": {

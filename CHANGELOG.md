@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Beta - Version 1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (20XX-XX-XX)
+
+### What's Changes
+### Major Change To `Logging`:
+* Added the following Logging Options:
+    * `Standard`
+    * `None`
+    * `Debug`
+* Removed Device Logging Option, which was pushed into new logging under debug.
+* Added Device Logging Override for each Device, by using the Device Config.
+* Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.4...v1.3.0
+
 ## [Version 1.2.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.2.4) (2021-12-15)
 
 ### What's Changes
