@@ -3,7 +3,7 @@ import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import ipify from 'ipify';
+import si from 'systeminformation';
 
 /**
  * Platform Accessory
@@ -195,7 +195,7 @@ export class ContactSensor {
       },
       params: {
         hostname: opts.hostname,
-        myip: await ipify({useIPv6: false}),
+        myip: await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)),
       },
     };
   }

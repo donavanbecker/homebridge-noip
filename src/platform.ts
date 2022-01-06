@@ -1,8 +1,8 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import ipify from 'ipify';
 import { ContactSensor } from './devices/contactsensor';
+import si from 'systeminformation';
 
 /**
  * HomebridgePlatform
@@ -162,8 +162,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
-        existingAccessory.context.serialNumber = (await ipify({useIPv6: false})) || '127.0.0.1';
-        this.debugLog(await ipify({useIPv6: false}));
+        existingAccessory.context.serialNumber = (await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`))) || '127.0.0.1';
+        this.debugLog(await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -184,8 +184,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
-      accessory.context.serialNumber = (await ipify({useIPv6: false})) || '127.0.0.1';
-      this.debugLog(await ipify({useIPv6: false}));
+      accessory.context.serialNumber = (await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`))) || '127.0.0.1';
+      this.debugLog(await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory

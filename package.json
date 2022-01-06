@@ -43,7 +43,7 @@
   "dependencies": {
     "rxjs": "^7.5.1",
     "axios": "^0.24.0",
-    "ipify": "^6.0.0",
+    "systeminformation": "^5.9.17",
     "@homebridge/plugin-ui-utils": "^0.0.19"
   },
   "devDependencies": {
