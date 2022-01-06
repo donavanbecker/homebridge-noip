@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import publicIp from 'public-ip';
+import ipify from 'ipify';
 import { ContactSensor } from './devices/contactsensor';
 
 /**
@@ -162,8 +162,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
-        existingAccessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
-        this.debugLog(await publicIp.v4());
+        existingAccessory.context.serialNumber = (await ipify({useIPv6: false})) || '127.0.0.1';
+        this.debugLog(await ipify({useIPv6: false}));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -184,8 +184,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
-      accessory.context.serialNumber = (await publicIp.v4()) || '127.0.0.1';
-      this.debugLog(await publicIp.v4());
+      accessory.context.serialNumber = (await ipify({useIPv6: false})) || '127.0.0.1';
+      this.debugLog(await ipify({useIPv6: false}));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory
