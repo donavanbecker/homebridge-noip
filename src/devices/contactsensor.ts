@@ -211,10 +211,10 @@ export class ContactSensor {
    */
   updateHomeKitCharacteristics() {
     if (this.ContactSensorState === undefined) {
-      this.platform.debugLog(`Thermostat ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
     } else {
       this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, this.ContactSensorState);
-      this.platform.debugLog(`Thermostat ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
     }
   }
 
