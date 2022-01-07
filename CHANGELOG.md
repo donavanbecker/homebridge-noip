@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
-## [Beta - Version 1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (20XX-XX-XX)
+## [Version 1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (2022-01-06)
 
 ### What's Changes
 ### Major Change To `Logging`:

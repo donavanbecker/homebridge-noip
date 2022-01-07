@@ -25,7 +25,6 @@ export class ContactSensor {
 
   // Config
   deviceRefreshRate!: any;
-  deviceLogging?: string;
 
   // Updates
   SensorUpdateInProgress!: boolean;
@@ -83,10 +82,10 @@ export class ContactSensor {
    * Parse the device status from the noip api
    */
   parseStatus() {
-    if (this.response.status === 200) {
-      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
-    } else {
+    if (this.response.data.includes('nochg')) {
       this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+    } else {
+      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
     }
     this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
   }
