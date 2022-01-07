@@ -3,7 +3,7 @@ import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import publicIp from 'public-ip';
+import si from 'systeminformation';
 
 /**
  * Platform Accessory
@@ -11,16 +11,23 @@ import publicIp from 'public-ip';
  * Each accessory may expose multiple services of different service types.
  */
 export class ContactSensor {
+  // Services
   private service: Service;
 
+  // Characteristic Values
   ContactSensorState!: CharacteristicValue;
-  noip: any;
+
+  // Others
+  options!: AxiosRequestConfig<any>;
+  interval;
   ip!: IPv4Address;
   response!: AxiosResponse<any>;
 
+  // Config
+  deviceRefreshRate!: any;
+
+  // Updates
   SensorUpdateInProgress!: boolean;
-  options!: AxiosRequestConfig<any>;
-  interval;
 
   constructor(
     private readonly platform: NoIPPlatform,
@@ -75,12 +82,12 @@ export class ContactSensor {
    * Parse the device status from the noip api
    */
   parseStatus() {
-    if (this.response.status === 200) {
-      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
-    } else {
+    if (this.response.data.includes('nochg')) {
       this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+    } else {
+      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
     }
-    this.platform.device(`${this.accessory.displayName} - ${this.ContactSensorState}`);
+    this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
   }
 
   /**
@@ -89,22 +96,22 @@ export class ContactSensor {
   async refreshStatus() {
     try {
       await this.NoIP();
-      this.platform.device(JSON.stringify(this.options));
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} options: ${JSON.stringify(this.options)}`);
       this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
-      this.platform.device(this.response.data);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${JSON.stringify(this.response.data)}`);
       const data = this.response.data.trim();
       const f = data.match(/good|nochg/g);
       if (f) {
-        this.platform.device(`${this.accessory.displayName}, ${f[0]}`);
+        this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, ${f[0]}`);
         this.status(f, data);
       } else {
-        this.platform.log.error(`${this.accessory.displayName}, error: ${data}`);
+        this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} error: ${data}`);
       }
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
-      this.platform.log.error(`${this.accessory.displayName} failed to update status, Error Message: ${JSON.stringify(e.message)}`);
-      this.platform.debug(`${this.accessory.displayName}, Error: ${JSON.stringify(e)}`);
+      this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} failed to update status, Error Message: ${JSON.stringify(e.message)}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${JSON.stringify(e)}`);
       this.apiError(e);
     }
   }
@@ -112,41 +119,41 @@ export class ContactSensor {
   private status(f: any, data: any) {
     switch (f[0]) {
       case 'nochg':
-        this.platform.device(`IP Address has not updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
+        this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}'s IP Address has not updated, IP Address: ${data.split(' ')[1]}`);
         break;
       case 'good':
-        this.platform.log.warn(`IP Address has been updated for ${this.accessory.displayName}, IP Address: ${data.split(' ')[1]}`);
+        this.platform.warnLog(`Contact Sensor: ${this.accessory.displayName}'s IP Address has been updated, IP Address: ${data.split(' ')[1]}`);
         break;
       case 'nohost':
-        this.platform.log.error('Hostname supplied does not exist under specified account, '
+        this.platform.errorLog('Hostname supplied does not exist under specified account, '
           + 'client exit and require user to enter new login credentials before performing an additional request.');
         this.timeout();
         break;
       case 'badauth':
-        this.platform.log.error('Invalid username password combination.');
+        this.platform.errorLog('Invalid username password combination.');
         this.timeout();
         break;
       case 'badagent':
-        this.platform.log.error('Client disabled. Client should exit and not perform any more updates without user intervention. ');
+        this.platform.errorLog('Client disabled. Client should exit and not perform any more updates without user intervention. ');
         this.timeout();
         break;
       case '!donator':
-        this.platform.log.error('An update request was sent, '
+        this.platform.errorLog('An update request was sent, '
           + 'including a feature that is not available to that particular user such as offline options.');
         this.timeout();
         break;
       case 'abuse':
-        this.platform.log.error('Username is blocked due to abuse. '
+        this.platform.errorLog('Username is blocked due to abuse. '
           + 'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. '
           + 'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.');
         this.timeout();
         break;
       case '911':
-        this.platform.log.error('A fatal error on our side such as a database outage. Retry the update no sooner than 30 minutes. ');
+        this.platform.errorLog('A fatal error on our side such as a database outage. Retry the update no sooner than 30 minutes. ');
         this.timeout();
         break;
       default:
-        this.platform.debug(data);
+        this.platform.debugLog(data);
     }
   }
 
@@ -158,7 +165,7 @@ export class ContactSensor {
       }),
     )
       .subscribe({
-        error: this.platform.log.error,
+        error: this.platform.errorLog,
       });
   }
 
@@ -187,7 +194,7 @@ export class ContactSensor {
       },
       params: {
         hostname: opts.hostname,
-        myip: await publicIp.v4(),
+        myip: await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)),
       },
     };
   }
@@ -203,10 +210,10 @@ export class ContactSensor {
    */
   updateHomeKitCharacteristics() {
     if (this.ContactSensorState === undefined) {
-      this.platform.debug(`Thermostat ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
     } else {
       this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, this.ContactSensorState);
-      this.platform.device(`Thermostat ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
     }
   }
 

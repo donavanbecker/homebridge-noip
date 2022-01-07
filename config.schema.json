@@ -34,25 +34,29 @@
         "placeholder": 1800,
         "description": "Indicates the number of seconds between polls of the No-IP service."
       },
-      "debug": {
-        "title": "Logging Settings",
+      "logging": {
+        "title": "Device Logging Override Setting",
         "type": "string",
-        "description": "Enble 'Device' or 'Debug' logging.",
         "oneOf": [
           {
-            "title": "Enable Debug Logging",
+            "title": "Standard Logging",
             "enum": [
-              "debug"
+              "standard"
             ]
           },
           {
-            "title": "Enable Device Logging",
+            "title": "No Logging",
             "enum": [
-              "device"
+              "none"
+            ]
+          },
+          {
+            "title": "Debug Logging",
+            "enum": [
+              "debug"
             ]
           }
-        ],
-        "required": false
+        ]
       },
       "disablePlugin": {
         "title": "Disable Plugin",
@@ -95,7 +99,7 @@
           "key": "refreshRate",
           "notitle": true
         },
-        "debug",
+        "logging",
         "disablePlugin"
       ]
     }
