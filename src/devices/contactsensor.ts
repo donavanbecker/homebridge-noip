@@ -194,7 +194,7 @@ export class ContactSensor {
       },
       params: {
         hostname: opts.hostname,
-        myip: await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)),
+        myip: await si.networkInterfaces().then(data => (`${data[1].ip4}`)),
       },
     };
   }
