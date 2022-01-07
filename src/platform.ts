@@ -2,7 +2,7 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Charact
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { ContactSensor } from './devices/contactsensor';
-import si from 'systeminformation';
+import easyIP from 'easy-ip';
 
 /**
  * HomebridgePlatform
@@ -147,7 +147,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     this.createContactSensor(device);
   }
 
-  private async createContactSensor(device) {
+  private async createContactSensor(device: any) {
     const uuid = this.api.hap.uuid.generate(device);
 
     // see if an accessory with the same uuid has already been registered and restored from
@@ -162,7 +162,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
-        existingAccessory.context.serialNumber = (await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)));
+        existingAccessory.context.serialNumber = (await this.publicIPv4());
+        this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -183,7 +184,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
-      accessory.context.serialNumber = (await si.networkInterfaces().then(data => (`IPv4: ${data[1].ip4}`)));
+      accessory.context.serialNumber = (await this.publicIPv4());
+      this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory
@@ -206,6 +208,16 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // remove platform accessories when no longer present
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
     this.warnLog(`Removing existing accessory from cache: ${existingAccessory.displayName}`);
+  }
+
+  async publicIPv4() {
+    const ip = new easyIP();
+    const IPv4 = ip.getGeobyMyPubIp().then((data: { ip: any; }) => {
+      this.debugLog(JSON.stringify(data));
+      const ipv4 = data.ip;
+      return ipv4;
+    });
+    return IPv4;
   }
 
   /**
