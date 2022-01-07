@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.4.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.4.0) (2022-01-06)
+
+### What's Changes
+* Change from dependency `systeminformation` to `easy-ip`.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.3.0...v1.4.0
+
 ## [Version 1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (2022-01-06)
 
 ### What's Changes
@@ -12,7 +19,7 @@ All notable changes to this project will be documented in this file. This projec
     * `Debug`
 * Removed Device Logging Option, which was pushed into new logging under debug.
 * Added Device Logging Override for each Device, by using the Device Config.
-* Change from dependency `public-ip` to `systeminformation`.
+* Change from dependency `public-ip` to `systeminformation` to `easy-ip`.
 * Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.4...v1.3.0
