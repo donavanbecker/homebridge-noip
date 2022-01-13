@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
-## [Version 1.5.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.0) (2022-01-12)
+## [Version 1.5.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.0) (2022-01-13)
 
 ### What's Changes
 * Removed dependency `easy-ip` to use built in Public IP finder.
