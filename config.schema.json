@@ -17,11 +17,17 @@
       "username": {
         "title": "NoIP Username/Email",
         "type": "string",
-        "required": true
+        "required": true,
+        "x-schema-form": {
+          "type": "email"
+        }
       },
       "password": {
         "title": "NoIP Password",
-        "type": "string"
+        "type": "string",
+        "x-schema-form": {
+          "type": "password"
+        }
       },
       "hostname": {
         "title": "Hostname",

@@ -1,8 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { ContactSensor } from './devices/contactsensor';
-import easyIP from 'easy-ip';
 
 /**
  * HomebridgePlatform
@@ -17,7 +16,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   public axios: AxiosInstance = axios.create({
-    responseType!: 'text',
+    responseType!: 'json',
   });
 
   version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
@@ -47,13 +46,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.debugLog(JSON.stringify(e));
       return;
     }
-
-    // setup axios interceptor to add headers / api key to each request
-    this.axios.interceptors.request.use((request: AxiosRequestConfig) => {
-      request.headers = request.headers || {};
-      request.params = request.params || {};
-      return request;
-    });
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -211,12 +203,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async publicIPv4() {
-    const ip = new easyIP();
-    const IPv4 = ip.getGeobyMyPubIp().then((data: { ip: any; }) => {
-      this.debugLog(JSON.stringify(data));
-      const ipv4 = data.ip;
-      return ipv4;
-    });
+    const pubIp = (await axios.get('https://ipinfo.io/json')).data;
+    this.debugLog(JSON.stringify(pubIp));
+    const IPv4 = pubIp.ip;
     return IPv4;
   }
 
