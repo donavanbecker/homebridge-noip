@@ -46,21 +46,15 @@
         "oneOf": [
           {
             "title": "Standard Logging",
-            "enum": [
-              "standard"
-            ]
+            "enum": ["standard"]
           },
           {
             "title": "No Logging",
-            "enum": [
-              "none"
-            ]
+            "enum": ["none"]
           },
           {
             "title": "Debug Logging",
-            "enum": [
-              "debug"
-            ]
+            "enum": ["debug"]
           }
         ]
       },
@@ -77,19 +71,14 @@
       "title": "No-IP Account Info",
       "expandable": true,
       "expanded": true,
-      "items": [
-        "username",
-        "password"
-      ]
+      "items": ["username", "password"]
     },
     {
       "type": "fieldset",
       "title": "Hostname",
       "expandable": true,
       "expanded": true,
-      "items": [
-        "hostname"
-      ]
+      "items": ["hostname"]
     },
     {
       "type": "fieldset",

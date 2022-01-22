@@ -16,7 +16,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   public readonly accessories: PlatformAccessory[] = [];
 
   public axios: AxiosInstance = axios.create({
-    responseType!: 'json',
+    responseType: 'json',
   });
 
   version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
@@ -33,8 +33,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
     // HOOBS notice
     if (__dirname.includes('hoobs')) {
-      this.warnLog('This plugin has not been tested under HOOBS, it is highly recommended that ' +
-        'you switch to Homebridge: https://git.io/Jtxb0');
+      this.warnLog('This plugin has not been tested under HOOBS, it is highly recommended that you switch to Homebridge: https://git.io/Jtxb0');
     }
 
     // verify the config
@@ -103,7 +102,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     this.config.debug;
     this.config.disablePlugin;
 
-
     if (this.config.refreshRate! < 1800) {
       throw new Error('Refresh Rate must be above 1800 (30 minutes).');
     }
@@ -154,7 +152,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
-        existingAccessory.context.serialNumber = (await this.publicIPv4());
+        existingAccessory.context.serialNumber = await this.publicIPv4();
         this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
@@ -176,7 +174,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
-      accessory.context.serialNumber = (await this.publicIPv4());
+      accessory.context.serialNumber = await this.publicIPv4();
       this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;

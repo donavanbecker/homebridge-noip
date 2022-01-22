@@ -28,11 +28,7 @@ export class ContactSensor {
   // Updates
   SensorUpdateInProgress!: boolean;
 
-  constructor(
-    private readonly platform: NoIPPlatform,
-    private accessory: PlatformAccessory,
-    public device,
-  ) {
+  constructor(private readonly platform: NoIPPlatform, private accessory: PlatformAccessory, public device) {
     // default placeholders
     this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
@@ -46,13 +42,13 @@ export class ContactSensor {
       .setCharacteristic(this.platform.Characteristic.Model, accessory.context.model)
       .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.serialNumber)
       .setCharacteristic(this.platform.Characteristic.FirmwareRevision, accessory.context.firmwareRevision)
-      .getCharacteristic(this.platform.Characteristic.FirmwareRevision).updateValue(accessory.context.firmwareRevision);
+      .getCharacteristic(this.platform.Characteristic.FirmwareRevision)
+      .updateValue(accessory.context.firmwareRevision);
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
-    (this.service =
-      this.accessory.getService(this.platform.Service.ContactSensor) ||
-      this.accessory.addService(this.platform.Service.ContactSensor)), accessory.displayName;
+    (this.service = this.accessory.getService(this.platform.Service.ContactSensor) || this.accessory.addService(this.platform.Service.ContactSensor)),
+    accessory.displayName;
 
     // To avoid "Cannot add a Service with the same UUID another Service without aCSo defining a unique 'subtype' property." error,
     // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
@@ -124,8 +120,10 @@ export class ContactSensor {
         this.platform.warnLog(`Contact Sensor: ${this.accessory.displayName}'s IP Address has been updated, IP Address: ${data.split(' ')[1]}`);
         break;
       case 'nohost':
-        this.platform.errorLog('Hostname supplied does not exist under specified account, '
-          + 'client exit and require user to enter new login credentials before performing an additional request.');
+        this.platform.errorLog(
+          'Hostname supplied does not exist under specified account, ' +
+            'client exit and require user to enter new login credentials before performing an additional request.',
+        );
         this.timeout();
         break;
       case 'badauth':
@@ -137,14 +135,17 @@ export class ContactSensor {
         this.timeout();
         break;
       case '!donator':
-        this.platform.errorLog('An update request was sent, '
-          + 'including a feature that is not available to that particular user such as offline options.');
+        this.platform.errorLog(
+          'An update request was sent, ' + 'including a feature that is not available to that particular user such as offline options.',
+        );
         this.timeout();
         break;
       case 'abuse':
-        this.platform.errorLog('Username is blocked due to abuse. '
-          + 'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. '
-          + 'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.');
+        this.platform.errorLog(
+          'Username is blocked due to abuse. ' +
+            'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. ' +
+            'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.',
+        );
         this.timeout();
         break;
       case '911':
@@ -157,12 +158,13 @@ export class ContactSensor {
   }
 
   private timeout() {
-    this.interval.pipe(
-      timeout({
-        each: 1000,
-        with: () => throwError(() => new Error('nohost')),
-      }),
-    )
+    this.interval
+      .pipe(
+        timeout({
+          each: 1000,
+          with: () => throwError(() => new Error('nohost')),
+        }),
+      )
       .subscribe({
         error: this.platform.errorLog,
       });
@@ -200,7 +202,8 @@ export class ContactSensor {
 
   validateEmail(email: string | undefined) {
     // eslint-disable-next-line max-len
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
 

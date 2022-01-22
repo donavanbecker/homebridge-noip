@@ -9,7 +9,6 @@ export const PLATFORM_NAME = 'NoIP';
  */
 export const PLUGIN_NAME = 'homebridge-noip';
 
-
 //Config
 export interface NoIPPlatformConfig extends PlatformConfig {
   domain?: string[];

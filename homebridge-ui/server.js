@@ -16,7 +16,6 @@ class PluginUiServer extends HomebridgePluginUiServer {
       The following is for users who have a lower version of config-ui-x
     */
 
-
     this.onRequest('/getCachedAccessories', async () => {
       try {
         // Define the plugin and create the array to return
@@ -35,9 +34,7 @@ class PluginUiServer extends HomebridgePluginUiServer {
           cachedAccessories = JSON.parse(cachedAccessories);
 
           // We only want the accessories for this plugin
-          cachedAccessories
-            .filter(accessory => accessory.plugin === plugin)
-            .forEach(accessory => devicesToReturn.push(accessory));
+          cachedAccessories.filter((accessory) => accessory.plugin === plugin).forEach((accessory) => devicesToReturn.push(accessory));
         }
 
         // Return the array

@@ -24,7 +24,7 @@ plugin allows you update your <a href="https://noip.com">No-IP</a> hostnames fro
 ## Configuration
 
 1. Login / create an account at https://noip.com/
-    - If you haven't already you can also create your No-IP hostname here as well.
+   - If you haven't already you can also create your No-IP hostname here as well.
 
 <p align="center">
 
