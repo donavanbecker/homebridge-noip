@@ -2,8 +2,9 @@ name: Dependabot
 
 on:
   push:
+    branches: beta
   pull_request:
-    branches: [master, beta]    
+    branches: beta
 
 jobs:
   build:
