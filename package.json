@@ -58,7 +58,7 @@
     "homebridge": "^1.4.0",
     "nodemon": "^2.0.15",
     "npm-check-updates": "^12.5.4",
-    "prettier": "2.6.0",
+    "prettier": "2.6.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
