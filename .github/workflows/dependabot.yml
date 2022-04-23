@@ -1,0 +1,15 @@
+name: automerge-dependabot
+
+on:
+  schedule:
+    - cron: '* * * * *'
+
+jobs:
+  automerge:
+    name: Auto-merge dependabot updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mitto98/dependabot-automerge-action@master
+        with:
+          token: ${{ github.token }}
+          merge: true
