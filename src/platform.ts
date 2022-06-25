@@ -75,7 +75,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         this.log.warn(`Using Config Logging: ${this.Logging}`);
       }
     } else {
-      this.log.warn('Using Standard Logging');
+      this.log.info('Using Standard Logging');
       this.Logging = 'standard';
     }
   }
