@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.5.8](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.8) (2022-08-31)
+
+### What's Changes
+
+- Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.7...v1.5.8
+
 ## [Version 1.5.7](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.7) (2022-06-25)
 
 ### What's Changes
