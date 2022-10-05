@@ -1,7 +1,9 @@
+/* eslint-disable max-len */
 import { Service, PlatformAccessory, CharacteristicValue, IPv4Address } from 'homebridge';
 import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
+import superStringify from 'super-stringify';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 /**
@@ -18,7 +20,7 @@ export class ContactSensor {
 
   // Others
   options!: AxiosRequestConfig<any>;
-  interval;
+  interval: any;
   ip!: IPv4Address;
   response!: AxiosResponse<any>;
 
@@ -91,9 +93,9 @@ export class ContactSensor {
   async refreshStatus() {
     try {
       await this.NoIP();
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} options: ${JSON.stringify(this.options)}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} options: ${superStringify(this.options)}`);
       this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${JSON.stringify(this.response.data)}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${superStringify(this.response.data)}`);
       const data = this.response.data.trim();
       const f = data.match(/good|nochg/g);
       if (f) {
@@ -105,8 +107,8 @@ export class ContactSensor {
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
-      this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} failed to update status, Error Message: ${JSON.stringify(e.message)}`);
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${JSON.stringify(e)}`);
+      this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} failed to update status, Error Message: ${superStringify(e.message)}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${superStringify(e)}`);
       this.apiError(e);
     }
   }
@@ -201,7 +203,6 @@ export class ContactSensor {
   }
 
   validateEmail(email: string | undefined) {
-    // eslint-disable-next-line max-len
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());

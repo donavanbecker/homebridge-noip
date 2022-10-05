@@ -1,6 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import axios, { AxiosInstance } from 'axios';
+import superStringify from 'super-stringify';
 import { ContactSensor } from './devices/contactsensor';
 
 /**
@@ -41,8 +42,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.verifyConfig();
       this.debugLog('Config OK');
     } catch (e: any) {
-      this.errorLog(JSON.stringify(e.message));
-      this.debugLog(JSON.stringify(e));
+      this.errorLog(superStringify(e.message));
+      this.debugLog(superStringify(e));
       return;
     }
 
@@ -56,8 +57,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       try {
         this.discoverDevices();
       } catch (e: any) {
-        this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
-        this.debugLog(JSON.stringify(e));
+        this.errorLog(`Failed to Discover Devices ${superStringify(e.message)}`);
+        this.debugLog(superStringify(e));
       }
     });
   }
@@ -153,7 +154,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = await this.publicIPv4();
-        this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
+        this.debugLog(superStringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = this.version;
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -175,7 +176,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
       accessory.context.serialNumber = await this.publicIPv4();
-      this.debugLog(JSON.stringify(accessory.context.serialNumber));
+      this.debugLog(superStringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = this.version;
       // create the accessory handler for the newly create accessory
@@ -202,7 +203,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv4() {
     const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-    this.debugLog(JSON.stringify(pubIp));
+    this.debugLog(superStringify(pubIp));
     const IPv4 = pubIp.ip;
     return IPv4;
   }
