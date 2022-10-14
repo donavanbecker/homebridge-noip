@@ -20,7 +20,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     responseType: 'json',
   });
 
-  version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
+  version = process.env.npm_package_version!;
   Logging?: string;
   debugMode!: boolean;
 
