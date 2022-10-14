@@ -14,7 +14,7 @@
   },
   "engines": {
     "homebridge": "^1.5.0",
-    "node": "^14.20.0 || ^16.17.0 || ^18.8.0"
+    "node": "^14.20.1 || ^16.18.0 || ^18.10.0"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -45,20 +45,20 @@
   ],
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^0.0.19",
-    "axios": "^1.0.0",
+    "axios": "^1.1.2",
     "rxjs": "^7.5.7",
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^18.8.2",
-    "@typescript-eslint/eslint-plugin": "^5.39.0",
-    "@typescript-eslint/parser": "^5.39.0",
-    "eslint": "^8.24.0",
+    "@types/node": "^18.8.5",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "eslint": "^8.25.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.2.1",
     "homebridge": "^1.5.0",
     "nodemon": "^2.0.20",
-    "npm-check-updates": "^16.3.8",
+    "npm-check-updates": "^16.3.11",
     "prettier": "2.7.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
