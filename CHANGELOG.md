@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.6.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.0) (2022-10-18)
+
+### What's Changes
+- Added Config to allow manually setting firmware version.
+- Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.8...v1.6.0
+
 ## [Version 1.5.8](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.8) (2022-08-31)
 
 ### What's Changes

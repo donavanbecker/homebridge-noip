@@ -156,7 +156,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.serialNumber = await this.publicIPv4();
         this.debugLog(superStringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
-        existingAccessory.context.firmwareRevision = this.version;
+        existingAccessory.context.firmwareRevision = await this.FirmwareRevision(device);
         this.api.updatePlatformAccessories([existingAccessory]);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
@@ -178,7 +178,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.context.serialNumber = await this.publicIPv4();
       this.debugLog(superStringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
-      accessory.context.firmwareRevision = this.version;
+      accessory.context.firmwareRevision = await this.FirmwareRevision(device);
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
@@ -193,6 +193,16 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         this.errorLog(`Check Config, Plugin Disabled: ${this.config.disablePlugin}`);
       }
     }
+  }
+
+  async FirmwareRevision(device: { firmware: any; }): Promise<any> {
+    let firmware: any;
+    if (device.firmware) {
+      firmware = device.firmware;
+    } else {
+      firmware = this.version;
+    }
+    return firmware;
   }
 
   public unregisterPlatformAccessories(existingAccessory: PlatformAccessory) {

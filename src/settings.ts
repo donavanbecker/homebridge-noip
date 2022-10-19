@@ -15,6 +15,7 @@ export interface NoIPPlatformConfig extends PlatformConfig {
   username?: string;
   password?: string;
   refreshRate?: number;
+  firmware?: number;
   logging?: string;
   debug?: string;
   disablePlugin?: boolean;
