@@ -1,6 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import axios, { AxiosInstance } from 'axios';
+import superStringify from 'super-stringify';
 import { ContactSensor } from './devices/contactsensor';
 
 /**
@@ -19,7 +20,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     responseType: 'json',
   });
 
-  version = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-var-requires
+  version = process.env.npm_package_version!;
   Logging?: string;
   debugMode!: boolean;
 
@@ -41,8 +42,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.verifyConfig();
       this.debugLog('Config OK');
     } catch (e: any) {
-      this.errorLog(JSON.stringify(e.message));
-      this.debugLog(JSON.stringify(e));
+      this.errorLog(superStringify(e.message));
+      this.debugLog(superStringify(e));
       return;
     }
 
@@ -56,8 +57,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       try {
         this.discoverDevices();
       } catch (e: any) {
-        this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
-        this.debugLog(JSON.stringify(e));
+        this.errorLog(`Failed to Discover Devices ${superStringify(e.message)}`);
+        this.debugLog(superStringify(e));
       }
     });
   }
@@ -153,9 +154,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = await this.publicIPv4();
-        this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
+        this.debugLog(superStringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
-        existingAccessory.context.firmwareRevision = this.version;
+        existingAccessory.context.firmwareRevision = await this.FirmwareRevision(device);
         this.api.updatePlatformAccessories([existingAccessory]);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
@@ -175,9 +176,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
       accessory.context.serialNumber = await this.publicIPv4();
-      this.debugLog(JSON.stringify(accessory.context.serialNumber));
+      this.debugLog(superStringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
-      accessory.context.firmwareRevision = this.version;
+      accessory.context.firmwareRevision = await this.FirmwareRevision(device);
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
@@ -194,6 +195,16 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     }
   }
 
+  async FirmwareRevision(device: { firmware: any; }): Promise<any> {
+    let firmware: any;
+    if (device.firmware) {
+      firmware = device.firmware;
+    } else {
+      firmware = this.version;
+    }
+    return firmware;
+  }
+
   public unregisterPlatformAccessories(existingAccessory: PlatformAccessory) {
     // remove platform accessories when no longer present
     this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
@@ -202,7 +213,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async publicIPv4() {
     const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-    this.debugLog(JSON.stringify(pubIp));
+    this.debugLog(superStringify(pubIp));
     const IPv4 = pubIp.ip;
     return IPv4;
   }

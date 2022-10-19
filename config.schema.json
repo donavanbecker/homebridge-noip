@@ -33,6 +33,14 @@
         "title": "Hostname",
         "type": "string"
       },
+      "firmware": {
+        "title": "Firmware Override",
+        "type": "string",
+        "placeholder": "1.2.8",
+        "condition": {
+          "functionBody": "return (model.options && model.options.devices && !model.options.devices[arrayIndices].hide_device && model.options.devices[arrayIndices].deviceID);"
+        }
+      },
       "refreshRate": {
         "title": "Refresh Rate",
         "type": "number",
@@ -94,6 +102,7 @@
           "key": "refreshRate",
           "notitle": true
         },
+        "firmware",
         "logging",
         "disablePlugin"
       ]
