@@ -36,10 +36,7 @@
       "firmware": {
         "title": "Firmware Override",
         "type": "string",
-        "placeholder": "1.2.8",
-        "condition": {
-          "functionBody": "return (model.options && model.options.devices && !model.options.devices[arrayIndices].hide_device && model.options.devices[arrayIndices].deviceID);"
-        }
+        "placeholder": "1.2.8"
       },
       "refreshRate": {
         "title": "Refresh Rate",
