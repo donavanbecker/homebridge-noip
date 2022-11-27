@@ -13,7 +13,7 @@
     "url": "https://github.com/donavanbecker/homebridge-noip/issues"
   },
   "engines": {
-    "homebridge": "^1.5.1",
+    "homebridge": "^1.6.0",
     "node": "^14.20.1 || ^16.18.0 || ^18.12.0"
   },
   "main": "dist/index.js",
@@ -57,7 +57,7 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.2.1",
     "nodemon": "^2.0.20",
-    "homebridge": "^1.5.1",
+    "homebridge": "^1.6.0",
     "npm-check-updates": "^16.4.3",
     "prettier": "2.8.0",
     "rimraf": "^3.0.2",

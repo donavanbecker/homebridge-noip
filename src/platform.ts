@@ -20,7 +20,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     responseType: 'json',
   });
 
-  version = process.env.npm_package_version!;
+  version = process.env.npm_package_version || '1.6.0';
   Logging?: string;
   debugMode!: boolean;
 
