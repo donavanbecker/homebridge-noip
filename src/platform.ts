@@ -20,7 +20,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     responseType: 'json',
   });
 
-  version = process.env.npm_package_version!;
+  version = process.env.npm_package_version || '1.6.0';
   Logging?: string;
   debugMode!: boolean;
 
@@ -114,7 +114,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     if (!this.config.refreshRate) {
       // default 900 seconds (15 minutes)
       this.config.refreshRate! = 1800;
-      this.warnLog('Using Default Refresh Rate of 30 minutes.');
+      this.infoLog('Using Default Refresh Rate of 30 minutes.');
     }
 
     if (!this.config.hostname) {

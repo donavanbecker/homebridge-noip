@@ -5,6 +5,7 @@ import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
 import superStringify from 'super-stringify';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Context } from 'vm';
 
 /**
  * Platform Accessory
@@ -43,9 +44,9 @@ export class ContactSensor {
       .setCharacteristic(this.platform.Characteristic.Manufacturer, 'No-IP')
       .setCharacteristic(this.platform.Characteristic.Model, accessory.context.model)
       .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.serialNumber)
-      .setCharacteristic(this.platform.Characteristic.FirmwareRevision, accessory.context.firmwareRevision)
+      .setCharacteristic(this.platform.Characteristic.FirmwareRevision, this.FirmwareRevision(accessory, device))
       .getCharacteristic(this.platform.Characteristic.FirmwareRevision)
-      .updateValue(accessory.context.firmwareRevision);
+      .updateValue(this.FirmwareRevision(accessory, device));
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
@@ -213,14 +214,30 @@ export class ContactSensor {
    */
   updateHomeKitCharacteristics() {
     if (this.ContactSensorState === undefined) {
-      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
     } else {
       this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, this.ContactSensorState);
-      this.platform.debugLog(`Contact Sensor ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
     }
   }
 
   public apiError(e: any) {
     this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, e);
+  }
+
+  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string; }): CharacteristicValue {
+    let FirmwareRevision: string;
+    this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName}`
+    + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`);
+    this.platform.log.debug(`$Contact Sensor: ${this.accessory.displayName} device.firmware: ${device.firmware}`);
+    this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName} this.platform.version: ${this.platform.version}`);
+    if (accessory.context.FirmwareRevision) {
+      FirmwareRevision = accessory.context.FirmwareRevision;
+    } else if (device.firmware) {
+      FirmwareRevision = device.firmware;
+    } else {
+      FirmwareRevision = this.platform.version;
+    }
+    return FirmwareRevision;
   }
 }
