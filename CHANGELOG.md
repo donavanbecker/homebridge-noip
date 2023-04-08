@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 1.6.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.2) (2023-04-07)
+
+### What's Changes
+- Housekeeping and updated dependencies.
+  - This release will end support for Node v14.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.6.1...v1.6.2
+
 ## [Version 1.6.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.1) (2022-12-08)
 
 ### What's Changes
