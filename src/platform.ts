@@ -1,8 +1,7 @@
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
-import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
-import axios, { AxiosInstance } from 'axios';
-import superStringify from 'super-stringify';
+import { request } from 'undici';
 import { ContactSensor } from './devices/contactsensor';
+import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
+import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 
 /**
  * HomebridgePlatform
@@ -15,10 +14,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory[] = [];
-
-  public axios: AxiosInstance = axios.create({
-    responseType: 'json',
-  });
 
   version = process.env.npm_package_version || '1.6.0';
   Logging?: string;
@@ -42,8 +37,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.verifyConfig();
       this.debugLog('Config OK');
     } catch (e: any) {
-      this.errorLog(superStringify(e.message));
-      this.debugLog(superStringify(e));
+      this.errorLog(JSON.stringify(e.message));
+      this.debugLog(JSON.stringify(e));
       return;
     }
 
@@ -57,8 +52,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       try {
         this.discoverDevices();
       } catch (e: any) {
-        this.errorLog(`Failed to Discover Devices ${superStringify(e.message)}`);
-        this.debugLog(superStringify(e));
+        this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
+        this.debugLog(JSON.stringify(e));
       }
     });
   }
@@ -101,14 +96,9 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      * This will disable adding any device and will just output info.
      */
     this.config.debug;
-    this.config.disablePlugin;
 
     if (this.config.refreshRate! < 1800) {
       throw new Error('Refresh Rate must be above 1800 (30 minutes).');
-    }
-
-    if (this.config.disablePlugin) {
-      this.log.error('Plugin is disabled.');
     }
 
     if (!this.config.refreshRate) {
@@ -122,6 +112,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     }
     if (!this.config.username) {
       throw new Error('Missing Your No-IP Username(E-mail)');
+    } else if (!this.validateEmail(this.config.username)) {
+      throw Error('Provide a valid Email');
     }
     if (!this.config.password) {
       throw new Error('Missing your No-IP Password');
@@ -154,7 +146,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.displayName = device;
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = await this.publicIPv4();
-        this.debugLog(superStringify(existingAccessory.context.serialNumber));
+        this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
         existingAccessory.context.firmwareRevision = await this.FirmwareRevision(device);
         this.api.updatePlatformAccessories([existingAccessory]);
@@ -176,7 +168,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // the `context` property can be used to store any data about the accessory you may need
       accessory.context.device = device;
       accessory.context.serialNumber = await this.publicIPv4();
-      this.debugLog(superStringify(accessory.context.serialNumber));
+      this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
       accessory.context.firmwareRevision = await this.FirmwareRevision(device);
       // create the accessory handler for the newly create accessory
@@ -212,10 +204,35 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async publicIPv4() {
-    const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-    this.debugLog(superStringify(pubIp));
+    const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
+      method: 'GET',
+    });
+    const pubIp = await body.json();
+    this.warnLog(`Devices: ${JSON.stringify(pubIp.body)}`);
+    this.warnLog(`Status Code: ${JSON.stringify(statusCode)}`);
+    this.warnLog(`Headers: ${JSON.stringify(headers)}`);
+    //const pubIp = (await axios.get('https://ipinfo.io/json')).data;
+    //this.debugLog(JSON.stringify(pubIp));
     const IPv4 = pubIp.ip;
     return IPv4;
+  }
+
+  generateHeaders = async () => {
+    return {
+      'Authorization': `${this.config.username}:${this.config.password}`,
+      'User-Agent': `Homebridge-NoIP/v${this.version}`,
+      'params': {
+        'hostname': this.config.hostname,
+        'myip': await this.publicIPv4(),
+      },
+    };
+  };
+
+  validateEmail(email: string | undefined) {
+    const re =
+      // eslint-disable-next-line max-len
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
   }
 
   /**

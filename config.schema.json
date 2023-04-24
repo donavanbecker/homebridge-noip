@@ -48,7 +48,13 @@
       "logging": {
         "title": "Device Logging Override Setting",
         "type": "string",
+        "required": true,
+        "default": "",
         "oneOf": [
+          {
+            "title": "Default Logging",
+            "enum": [""]
+          },
           {
             "title": "Standard Logging",
             "enum": ["standard"]
@@ -62,11 +68,6 @@
             "enum": ["debug"]
           }
         ]
-      },
-      "disablePlugin": {
-        "title": "Disable Plugin",
-        "type": "boolean",
-        "description": "DO NOT USE UNLESS YOU WANT TO REMOVE ACCESSORIES FROM CACHE."
       }
     }
   },
@@ -100,8 +101,7 @@
           "notitle": true
         },
         "firmware",
-        "logging",
-        "disablePlugin"
+        "logging"
       ]
     }
   ]
