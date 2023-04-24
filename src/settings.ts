@@ -17,12 +17,11 @@ export interface NoIPPlatformConfig extends PlatformConfig {
 }
 
 export type DevicesConfig = {
-  devices?: Array<DevicesConfig>;
-  domain?: string[];
+  hostname?: string[];
   username?: string;
   password?: string;
-  refreshRate?: number;
   firmware?: number;
+  refreshRate?: number;
   logging?: string;
   delete?: boolean;
 };

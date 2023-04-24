@@ -2,6 +2,7 @@ import { request } from 'undici';
 import { ContactSensor } from './devices/contactsensor';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
+import { readFileSync, writeFileSync } from 'fs';
 
 /**
  * HomebridgePlatform
@@ -18,6 +19,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   version = process.env.npm_package_version || '1.6.0';
   Logging?: string;
   debugMode!: boolean;
+  platformLogging?: string;
 
   constructor(public readonly log: Logger, public readonly config: NoIPPlatformConfig, public readonly api: API) {
     this.logs();
@@ -58,24 +60,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     });
   }
 
-  logs() {
-    this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    if (this.debugMode && !this.config.logging) {
-      if (this.debugMode) {
-        this.log.warn('Using debugMode Logging');
-      }
-      this.Logging = 'debugMode';
-    } else if (this.config.logging === 'debug' || this.config.logging === 'standard' || this.config.logging === 'none') {
-      this.Logging = this.config.logging;
-      if (this.debugMode) {
-        this.log.warn(`Using Config Logging: ${this.Logging}`);
-      }
-    } else {
-      this.log.info('Using Standard Logging');
-      this.Logging = 'standard';
-    }
-  }
-
   /**
    * This function is invoked when homebridge restores cached accessories from disk at startup.
    * It should be used to setup event handlers for characteristics and update respective values.
@@ -90,11 +74,12 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   /**
    * Verify the config passed to the plugin is valid
    */
-  verifyConfig() {
+  async verifyConfig() {
     /**
      * Hidden Device Discovery Option
      * This will disable adding any device and will just output info.
      */
+    this.updateToV2;
     this.config.debug;
 
     if (this.config.refreshRate! < 1800) {
@@ -106,17 +91,67 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.config.refreshRate! = 1800;
       this.infoLog('Using Default Refresh Rate of 30 minutes.');
     }
+    // Old Config
+    if (this.config.hostname || this.config.username || this.config.password) {
+      const oldConfig = {
+        hostname: this.config.hostname,
+        username: this.config.username,
+        password: this.config.password,
+      };
+      this.errorLog(`You still have old config that will be ignored, Old Config: ${JSON.stringify(oldConfig)}`);
+    }
+    // Device Config
+    if (this.config.devices) {
+      for (const deviceConfig of this.config.devices) {
+        if (!deviceConfig.hostname) {
+          this.errorLog('Missing Domain, Need Domain that will be updated.');
+        }
+        if (!deviceConfig.username) {
+          this.errorLog('Missing Your No-IP Username(E-mail)');
+        } else if (!this.validateEmail(deviceConfig.username)) {
+          this.errorLog('Provide a valid Email');
+        }
+        if (!deviceConfig.password) {
+          this.errorLog('Missing your No-IP Password');
+        }
+      }
+    } else {
+      this.errorLog('verifyConfig, No Device Config');
+      this.updateToV2;
+    }
+  }
 
-    if (!this.config.hostname) {
-      throw new Error('Missing Domain, Need Domain that will be updated.');
-    }
-    if (!this.config.username) {
-      throw new Error('Missing Your No-IP Username(E-mail)');
-    } else if (!this.validateEmail(this.config.username)) {
-      throw Error('Provide a valid Email');
-    }
-    if (!this.config.password) {
-      throw new Error('Missing your No-IP Password');
+  /**
+   * The openToken was old config.
+   * This method saves the openToken as the token in the config.json file
+   * @param this.config.hostname
+   * @param this.config.username
+   * @param this.config.password
+   */
+  async updateToV2() {
+    try {
+
+      // load in the current config
+      const currentConfig = JSON.parse(readFileSync(this.api.user.configPath(), 'utf8'));
+      this.debugErrorLog(`currentConfig: ${JSON.stringify(currentConfig)}`);
+
+      // check the platforms section is an array before we do array things on it
+      if (!Array.isArray(currentConfig.platforms)) {
+        throw new Error('Cannot find platforms array in config');
+      }
+
+      // find this plugins current config
+      const pluginConfig = currentConfig.platforms.find((x: { platform: string }) => x.platform === PLATFORM_NAME);
+      this.errorLog(`currentConfig: ${JSON.stringify(pluginConfig)}`);
+
+      if (!pluginConfig) {
+        throw new Error(`Cannot find config for ${PLATFORM_NAME} in platforms array`);
+      }
+      // save the config, ensuring we maintain pretty json
+      writeFileSync(this.api.user.configPath(), JSON.stringify(currentConfig, null, 4));
+      this.verifyConfig();
+    } catch (e: any) {
+      this.errorLog(`Update Token: ${e}`);
     }
   }
 
@@ -125,9 +160,15 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
    * Accessories are registered by either their DeviceClass, DeviceModel, or DeviceID
    */
   async discoverDevices() {
-    const device = this.config.hostname;
-    this.infoLog(`Discovered ${this.config.hostname}`);
-    this.createContactSensor(device);
+    try {
+      for (const device of this.config.devices!) {
+        this.infoLog(`Discovered ${device.hostname}`);
+        this.createContactSensor(device);
+      }
+    } catch {
+      this.updateToV2;
+      this.errorLog('discoverDevices, No Device Config');
+    }
   }
 
   private async createContactSensor(device: any) {
@@ -139,7 +180,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
     if (existingAccessory) {
       // the accessory already exists
-      if (!this.config.disablePlugin) {
+      if (!device.delete) {
         this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
@@ -157,7 +198,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
-    } else if (!this.config.disablePlugin) {
+    } else if (!device.delete) {
       // the accessory does not yet exist, so we need to create it
       this.infoLog(`Adding new accessory: ${device}`);
 
@@ -180,10 +221,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessories.push(accessory);
     } else {
-      if (this.config.debug === 'device') {
-        this.errorLog(`Unable to Register new device: ${device}`);
-        this.errorLog(`Check Config, Plugin Disabled: ${this.config.disablePlugin}`);
-      }
+      this.debugErrorLog(`Unable to Register new device: ${device}`);
     }
   }
 
@@ -217,17 +255,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     return IPv4;
   }
 
-  generateHeaders = async () => {
-    return {
-      'Authorization': `${this.config.username}:${this.config.password}`,
-      'User-Agent': `Homebridge-NoIP/v${this.version}`,
-      'params': {
-        'hostname': this.config.hostname,
-        'myip': await this.publicIPv4(),
-      },
-    };
-  };
-
   validateEmail(email: string | undefined) {
     const re =
       // eslint-disable-next-line max-len
@@ -235,38 +262,69 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     return re.test(String(email).toLowerCase());
   }
 
+  logs() {
+    this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
+    if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
+      this.platformLogging = this.config.options!.logging;
+      this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
+    } else if (this.debugMode) {
+      this.platformLogging = 'debugMode';
+      this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+    } else {
+      this.platformLogging = 'standard';
+      this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+    }
+  }
+
   /**
    * If device level logging is turned on, log to log.warn
    * Otherwise send debug logs to log.debug
    */
-  infoLog(...log: any[]) {
-    if (this.enablingLogging()) {
+  infoLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
       this.log.info(String(...log));
     }
   }
 
-  warnLog(...log: any[]) {
-    if (this.enablingLogging()) {
+  warnLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
       this.log.warn(String(...log));
     }
   }
 
-  errorLog(...log: any[]) {
-    if (this.enablingLogging()) {
+  debugWarnLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
+      if (this.platformLogging?.includes('debug')) {
+        this.log.warn('[DEBUG]', String(...log));
+      }
+    }
+  }
+
+  errorLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
       this.log.error(String(...log));
     }
   }
 
-  debugLog(...log: any[]) {
-    if (this.enablingLogging()) {
-      if (this.Logging?.includes('debug')) {
+  debugErrorLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
+      if (this.platformLogging?.includes('debug')) {
+        this.log.error('[DEBUG]', String(...log));
+      }
+    }
+  }
+
+  debugLog(...log: any[]): void {
+    if (this.enablingPlatfromLogging()) {
+      if (this.platformLogging === 'debugMode') {
         this.log.debug(String(...log));
+      } else if (this.platformLogging === 'debug') {
         this.log.info('[DEBUG]', String(...log));
       }
     }
   }
 
-  enablingLogging(): boolean {
-    return this.Logging?.includes('debug') || this.Logging === 'standard';
+  enablingPlatfromLogging(): boolean {
+    return this.platformLogging?.includes('debug') || this.platformLogging === 'standard';
   }
 }

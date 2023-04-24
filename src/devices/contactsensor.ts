@@ -93,7 +93,14 @@ export class ContactSensor {
     try {
       const { body, statusCode, headers } = await request('https://dynupdate.no-ip.com/nic/update', {
         method: 'GET',
-        headers: [JSON.stringify(this.platform.generateHeaders())],
+        query: {
+          hostname: this.device.hostname,
+          myip: this.platform.publicIPv4,
+        },
+        headers: {
+          'Authorization': `${this.device.username}:${this.device.password}`,
+          'User-Agent': `Homebridge-NoIP/v${this.platform.version}`,
+        },
       });
       this.response = await body.text();
       this.platform.log.warn(`Response: ${JSON.stringify(this.response)}`);
