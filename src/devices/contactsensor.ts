@@ -98,7 +98,7 @@ export class ContactSensor {
           myip: this.platform.publicIPv4,
         },
         headers: {
-          'Authorization': `${this.device.username}:${this.device.password}`,
+          'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
           'User-Agent': `Homebridge-NoIP/v${this.platform.version}`,
         },
       });

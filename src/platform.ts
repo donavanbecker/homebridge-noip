@@ -172,7 +172,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   private async createContactSensor(device: any) {
-    const uuid = this.api.hap.uuid.generate(device);
+    const uuid = this.api.hap.uuid.generate(device.hostname);
 
     // see if an accessory with the same uuid has already been registered and restored from
     // the cached devices we stored in the `configureAccessory` method above
@@ -184,7 +184,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         this.infoLog(`Restoring existing accessory from cache: ${existingAccessory.displayName}`);
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        existingAccessory.displayName = device;
+        existingAccessory.displayName = device.hostname;
         existingAccessory.context.device = device;
         existingAccessory.context.serialNumber = await this.publicIPv4();
         this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
@@ -207,7 +207,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
-      accessory.context.device = device;
+      accessory.context.device = device.hostname;
       accessory.context.serialNumber = await this.publicIPv4();
       this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
@@ -221,7 +221,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessories.push(accessory);
     } else {
-      this.debugErrorLog(`Unable to Register new device: ${device}`);
+      this.debugErrorLog(`Unable to Register new device: ${JSON.stringify(device)}`);
     }
   }
 
