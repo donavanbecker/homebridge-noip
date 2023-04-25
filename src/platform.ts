@@ -2,7 +2,6 @@ import { request } from 'undici';
 import { ContactSensor } from './devices/contactsensor';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
-import { readFileSync, writeFileSync } from 'fs';
 
 /**
  * HomebridgePlatform
@@ -27,11 +26,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     // only load if configured
     if (!this.config) {
       return;
-    }
-
-    // HOOBS notice
-    if (__dirname.includes('hoobs')) {
-      this.warnLog('This plugin has not been tested under HOOBS, it is highly recommended that you switch to Homebridge: https://git.io/Jtxb0');
     }
 
     // verify the config
@@ -79,7 +73,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      * Hidden Device Discovery Option
      * This will disable adding any device and will just output info.
      */
-    this.updateToV2;
     this.config.debug;
 
     if (this.config.refreshRate! < 1800) {
@@ -117,41 +110,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       }
     } else {
       this.errorLog('verifyConfig, No Device Config');
-      this.updateToV2;
-    }
-  }
-
-  /**
-   * The openToken was old config.
-   * This method saves the openToken as the token in the config.json file
-   * @param this.config.hostname
-   * @param this.config.username
-   * @param this.config.password
-   */
-  async updateToV2() {
-    try {
-
-      // load in the current config
-      const currentConfig = JSON.parse(readFileSync(this.api.user.configPath(), 'utf8'));
-      this.debugErrorLog(`currentConfig: ${JSON.stringify(currentConfig)}`);
-
-      // check the platforms section is an array before we do array things on it
-      if (!Array.isArray(currentConfig.platforms)) {
-        throw new Error('Cannot find platforms array in config');
-      }
-
-      // find this plugins current config
-      const pluginConfig = currentConfig.platforms.find((x: { platform: string }) => x.platform === PLATFORM_NAME);
-      this.errorLog(`currentConfig: ${JSON.stringify(pluginConfig)}`);
-
-      if (!pluginConfig) {
-        throw new Error(`Cannot find config for ${PLATFORM_NAME} in platforms array`);
-      }
-      // save the config, ensuring we maintain pretty json
-      writeFileSync(this.api.user.configPath(), JSON.stringify(currentConfig, null, 4));
-      this.verifyConfig();
-    } catch (e: any) {
-      this.errorLog(`Update Token: ${e}`);
     }
   }
 
@@ -166,7 +124,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         this.createContactSensor(device);
       }
     } catch {
-      this.updateToV2;
       this.errorLog('discoverDevices, No Device Config');
     }
   }
@@ -194,16 +151,16 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         new ContactSensor(this, existingAccessory, device);
-        this.debugLog(`uuid: ${device}`);
+        this.debugLog(`uuid: ${device.hostname}`);
       } else {
         this.unregisterPlatformAccessories(existingAccessory);
       }
     } else if (!device.delete) {
       // the accessory does not yet exist, so we need to create it
-      this.infoLog(`Adding new accessory: ${device}`);
+      this.infoLog(`Adding new accessory: ${device.hostname}`);
 
       // create a new accessory
-      const accessory = new this.api.platformAccessory(device, uuid);
+      const accessory = new this.api.platformAccessory(device.hostname, uuid);
 
       // store a copy of the device object in the `accessory.context`
       // the `context` property can be used to store any data about the accessory you may need
@@ -215,13 +172,13 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
-      this.debugLog(`uuid: ${device}`);
+      this.debugLog(`${device.hostname} uuid: ${device.hostname}`);
 
       // link the accessory to your platform
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
       this.accessories.push(accessory);
     } else {
-      this.debugErrorLog(`Unable to Register new device: ${JSON.stringify(device)}`);
+      this.debugErrorLog(`Unable to Register new device: ${JSON.stringify(device.hostname)}`);
     }
   }
 
@@ -242,17 +199,21 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async publicIPv4() {
-    const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
-      method: 'GET',
-    });
-    const pubIp = await body.json();
-    this.warnLog(`Devices: ${JSON.stringify(pubIp.body)}`);
-    this.warnLog(`Status Code: ${JSON.stringify(statusCode)}`);
-    this.warnLog(`Headers: ${JSON.stringify(headers)}`);
-    //const pubIp = (await axios.get('https://ipinfo.io/json')).data;
-    //this.debugLog(JSON.stringify(pubIp));
-    const IPv4 = pubIp.ip;
-    return IPv4;
+    try {
+      const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
+        method: 'GET',
+      });
+      const pubIp = await body.json();
+      this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`);
+      this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
+      this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
+      //const pubIp = (await axios.get('https://ipinfo.io/json')).data;
+      //this.debugLog(JSON.stringify(pubIp));
+      const IPv4 = pubIp.ip;
+      return IPv4;
+    } catch {
+      this.errorLog('Not Able To Retreive IP Address');
+    }
   }
 
   validateEmail(email: string | undefined) {

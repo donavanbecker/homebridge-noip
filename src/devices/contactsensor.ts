@@ -49,7 +49,7 @@ export class ContactSensor {
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     (this.service = this.accessory.getService(this.platform.Service.ContactSensor) || this.accessory.addService(this.platform.Service.ContactSensor)),
-    accessory.displayName;
+    device.hostname;
 
     // To avoid "Cannot add a Service with the same UUID another Service without aCSo defining a unique 'subtype' property." error,
     // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
@@ -57,7 +57,7 @@ export class ContactSensor {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.displayName);
+    this.service.setCharacteristic(this.platform.Characteristic.Name, device.hostname);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/
@@ -98,14 +98,14 @@ export class ContactSensor {
           myip: this.platform.publicIPv4,
         },
         headers: {
-          'Authorization': `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
+          Authorization: `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
           'User-Agent': `Homebridge-NoIP/v${this.platform.version}`,
         },
       });
       this.response = await body.text();
-      this.platform.log.warn(`Response: ${JSON.stringify(this.response)}`);
-      this.platform.log.warn(`Status Code: ${JSON.stringify(statusCode)}`);
-      this.platform.log.warn(`Headers: ${JSON.stringify(headers)}`);
+      this.platform.debugWarnLog(`Response: ${JSON.stringify(this.response)}`);
+      this.platform.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
+      this.platform.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
 
       //this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
       this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${JSON.stringify(this.response)}`);
@@ -201,10 +201,11 @@ export class ContactSensor {
     this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, e);
   }
 
-  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string; }): CharacteristicValue {
+  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string }): CharacteristicValue {
     let FirmwareRevision: string;
-    this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName}`
-    + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`);
+    this.platform.log.debug(
+      `Contact Sensor: ${this.accessory.displayName}` + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`,
+    );
     this.platform.log.debug(`$Contact Sensor: ${this.accessory.displayName} device.firmware: ${device.firmware}`);
     this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName} this.platform.version: ${this.platform.version}`);
     if (accessory.context.FirmwareRevision) {
