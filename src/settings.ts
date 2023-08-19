@@ -11,12 +11,17 @@ export const PLUGIN_NAME = 'homebridge-noip';
 
 //Config
 export interface NoIPPlatformConfig extends PlatformConfig {
-  domain?: string[];
+  devices?: Array<DevicesConfig>;
+  refreshRate?: number;
+  logging?: string;
+}
+
+export type DevicesConfig = {
+  hostname?: string[];
   username?: string;
   password?: string;
-  refreshRate?: number;
   firmware?: number;
+  refreshRate?: number;
   logging?: string;
-  debug?: string;
-  disablePlugin?: boolean;
-}
+  delete?: boolean;
+};

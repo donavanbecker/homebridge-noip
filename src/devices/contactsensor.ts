@@ -3,8 +3,7 @@ import { Service, PlatformAccessory, CharacteristicValue, IPv4Address } from 'ho
 import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
-import superStringify from 'super-stringify';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { request } from 'undici';
 import { Context } from 'vm';
 
 /**
@@ -20,16 +19,15 @@ export class ContactSensor {
   ContactSensorState!: CharacteristicValue;
 
   // Others
-  options!: AxiosRequestConfig<any>;
   interval: any;
   ip!: IPv4Address;
-  response!: AxiosResponse<any>;
 
   // Config
   deviceRefreshRate!: any;
 
   // Updates
   SensorUpdateInProgress!: boolean;
+  response!: string;
 
   constructor(private readonly platform: NoIPPlatform, private accessory: PlatformAccessory, public device) {
     // default placeholders
@@ -51,7 +49,7 @@ export class ContactSensor {
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     (this.service = this.accessory.getService(this.platform.Service.ContactSensor) || this.accessory.addService(this.platform.Service.ContactSensor)),
-    accessory.displayName;
+    device.hostname;
 
     // To avoid "Cannot add a Service with the same UUID another Service without aCSo defining a unique 'subtype' property." error,
     // when creating multiple services of the same type, you need to use the following syntax to specify a name and subtype id:
@@ -59,7 +57,7 @@ export class ContactSensor {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, accessory.displayName);
+    this.service.setCharacteristic(this.platform.Characteristic.Name, device.hostname);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/
@@ -80,7 +78,7 @@ export class ContactSensor {
    * Parse the device status from the noip api
    */
   parseStatus() {
-    if (this.response.data.includes('nochg')) {
+    if (this.response.includes('nochg')) {
       this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
     } else {
       this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
@@ -93,11 +91,25 @@ export class ContactSensor {
    */
   async refreshStatus() {
     try {
-      await this.NoIP();
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} options: ${superStringify(this.options)}`);
-      this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${superStringify(this.response.data)}`);
-      const data = this.response.data.trim();
+      const { body, statusCode, headers } = await request('https://dynupdate.no-ip.com/nic/update', {
+        method: 'GET',
+        query: {
+          hostname: this.device.hostname,
+          myip: this.platform.publicIPv4,
+        },
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
+          'User-Agent': `Homebridge-NoIP/v${this.platform.version}`,
+        },
+      });
+      this.response = await body.text();
+      this.platform.debugWarnLog(`Response: ${JSON.stringify(this.response)}`);
+      this.platform.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
+      this.platform.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
+
+      //this.response = await this.platform.axios.get('https://dynupdate.no-ip.com/nic/update', this.options);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} respsonse: ${JSON.stringify(this.response)}`);
+      const data = this.response.trim();
       const f = data.match(/good|nochg/g);
       if (f) {
         this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, ${f[0]}`);
@@ -108,8 +120,8 @@ export class ContactSensor {
       this.parseStatus();
       this.updateHomeKitCharacteristics();
     } catch (e: any) {
-      this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} failed to update status, Error Message: ${superStringify(e.message)}`);
-      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${superStringify(e)}`);
+      this.platform.errorLog(`Contact Sensor: ${this.accessory.displayName} failed to update status, Error Message: ${JSON.stringify(e.message)}`);
+      this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName}, Error: ${JSON.stringify(e)}`);
       this.apiError(e);
     }
   }
@@ -173,42 +185,6 @@ export class ContactSensor {
       });
   }
 
-  private async NoIP() {
-    const opts = {
-      user: this.platform.config.username,
-      pass: this.platform.config.password,
-      hostname: this.platform.config.hostname,
-    };
-    if (!opts.hostname || !opts.pass) {
-      throw Error('Missing params!');
-    }
-
-    if (!this.validateEmail(opts.user)) {
-      throw Error('Provide a valid Email');
-    }
-
-    this.options = {
-      responseType: 'text',
-      headers: {
-        'user-agent': 'Homebridge-NoIP/v' + this.platform.version,
-      },
-      auth: {
-        username: opts.user!,
-        password: opts.pass,
-      },
-      params: {
-        hostname: opts.hostname,
-        myip: await this.platform.publicIPv4(),
-      },
-    };
-  }
-
-  validateEmail(email: string | undefined) {
-    const re =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
-
   /**
    * Updates the status for each of the HomeKit Characteristics
    */
@@ -225,10 +201,11 @@ export class ContactSensor {
     this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, e);
   }
 
-  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string; }): CharacteristicValue {
+  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string }): CharacteristicValue {
     let FirmwareRevision: string;
-    this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName}`
-    + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`);
+    this.platform.log.debug(
+      `Contact Sensor: ${this.accessory.displayName}` + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`,
+    );
     this.platform.log.debug(`$Contact Sensor: ${this.accessory.displayName} device.firmware: ${device.firmware}`);
     this.platform.log.debug(`Contact Sensor: ${this.accessory.displayName} this.platform.version: ${this.platform.version}`);
     if (accessory.context.FirmwareRevision) {

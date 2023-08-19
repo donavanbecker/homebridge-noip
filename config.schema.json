@@ -14,29 +14,73 @@
         "default": "NoIP",
         "required": true
       },
-      "username": {
-        "title": "NoIP Username/Email",
-        "type": "string",
-        "required": true,
-        "x-schema-form": {
-          "type": "email"
+      "devices": {
+        "type": "array",
+        "items": {
+          "title": "Devices",
+          "type": "object",
+          "properties": {
+            "username": {
+              "title": "NoIP Username/Email",
+              "type": "string",
+              "required": true,
+              "x-schema-form": {
+                "type": "email"
+              }
+            },
+            "password": {
+              "title": "NoIP Password",
+              "type": "string",
+              "x-schema-form": {
+                "type": "password"
+              }
+            },
+            "hostname": {
+              "title": "Hostname",
+              "type": "string"
+            },
+            "firmware": {
+              "title": "Firmware Override",
+              "type": "string",
+              "placeholder": "1.2.8"
+            },
+            "refreshRate": {
+              "title": "Device Refresh Rate",
+              "type": "number",
+              "minimum": 1800,
+              "placeholder": 1800,
+              "description": "Indicates the number of seconds between polls of the No-IP service."
+            },
+            "logging": {
+              "title": "Device Logging Override Setting",
+              "type": "string",
+              "required": true,
+              "default": "",
+              "oneOf": [
+                {
+                  "title": "Default Logging",
+                  "enum": [""]
+                },
+                {
+                  "title": "Standard Logging",
+                  "enum": ["standard"]
+                },
+                {
+                  "title": "No Logging",
+                  "enum": ["none"]
+                },
+                {
+                  "title": "Debug Logging",
+                  "enum": ["debug"]
+                }
+              ]
+            },
+            "delete": {
+              "title": "Delete Device",
+              "type": "boolean"
+            }
+          }
         }
-      },
-      "password": {
-        "title": "NoIP Password",
-        "type": "string",
-        "x-schema-form": {
-          "type": "password"
-        }
-      },
-      "hostname": {
-        "title": "Hostname",
-        "type": "string"
-      },
-      "firmware": {
-        "title": "Firmware Override",
-        "type": "string",
-        "placeholder": "1.2.8"
       },
       "refreshRate": {
         "title": "Refresh Rate",
@@ -46,9 +90,15 @@
         "description": "Indicates the number of seconds between polls of the No-IP service."
       },
       "logging": {
-        "title": "Device Logging Override Setting",
+        "title": "Plugin Logging Setting",
         "type": "string",
+        "required": true,
+        "default": "",
         "oneOf": [
+          {
+            "title": "Default Logging",
+            "enum": [""]
+          },
           {
             "title": "Standard Logging",
             "enum": ["standard"]
@@ -62,28 +112,26 @@
             "enum": ["debug"]
           }
         ]
-      },
-      "disablePlugin": {
-        "title": "Disable Plugin",
-        "type": "boolean",
-        "description": "DO NOT USE UNLESS YOU WANT TO REMOVE ACCESSORIES FROM CACHE."
       }
     }
   },
   "layout": [
     {
-      "type": "fieldset",
-      "title": "No-IP Account Info",
+      "key": "devices",
+      "notitle": false,
+      "type": "tabarray",
+      "title": "{{ value.hostname || 'New Hostname' }}",
       "expandable": true,
-      "expanded": true,
-      "items": ["username", "password"]
-    },
-    {
-      "type": "fieldset",
-      "title": "Hostname",
-      "expandable": true,
-      "expanded": true,
-      "items": ["hostname"]
+      "expanded": false,
+      "orderable": false,
+      "items": [
+        "devices[].hostname",
+        "devices[].username",
+        "devices[].password",
+        "devices[].firmware",
+        "devices[].refreshRate",
+        "devices[].logging"
+      ]
     },
     {
       "type": "fieldset",
@@ -99,9 +147,7 @@
           "key": "refreshRate",
           "notitle": true
         },
-        "firmware",
-        "logging",
-        "disablePlugin"
+        "logging"
       ]
     }
   ]
