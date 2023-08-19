@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 2.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.0) (2023-08-19)
+
+### What's Changes
+#### Major Changes
+- Added Support to update multiple hostnames.
+  - Must setup hostnames again after upgrading to v2.0.0
+
+#### Other Changes
+- Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.6.2...v2.0.0
+
 ## [Version 1.6.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.2) (2023-04-07)
 
 ### What's Changes

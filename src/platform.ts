@@ -203,7 +203,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       const { body, statusCode, headers } = await request('https://ipinfo.io/json', {
         method: 'GET',
       });
-      const pubIp = await body.json();
+      const pubIp: any = await body.json();
       this.debugWarnLog(`IP Address: ${JSON.stringify(pubIp.ip)}`);
       this.debugWarnLog(`Status Code: ${JSON.stringify(statusCode)}`);
       this.debugWarnLog(`Headers: ${JSON.stringify(headers)}`);
