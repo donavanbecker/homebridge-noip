@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge No-IP",
   "name": "homebridge-noip",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
@@ -50,18 +50,18 @@
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.5.1",
-    "@typescript-eslint/eslint-plugin": "^6.4.0",
-    "@typescript-eslint/parser": "^6.4.0",
-    "eslint": "^8.47.0",
+    "@types/node": "^20.5.7",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
+    "@typescript-eslint/parser": "^6.4.1",
+    "eslint": "^8.48.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-prettier": "5.0.0",
     "nodemon": "^3.0.1",
     "homebridge": "^1.6.1",
-    "npm-check-updates": "^16.12.2",
+    "npm-check-updates": "^16.13.1",
     "prettier": "3.0.2",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }
