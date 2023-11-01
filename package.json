@@ -1,7 +1,7 @@
 {
   "displayName": "Homebridge No-IP",
   "name": "homebridge-noip",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
@@ -14,12 +14,13 @@
   },
   "engines": {
     "homebridge": "^1.6.1",
-    "node": "^16.20.2 || ^18.17.1 || ^20.5.1"
+    "node": "^18 || ^20"
   },
   "main": "dist/index.js",
   "scripts": {
     "check": "npm install && npm outdated",
     "update": "ncu -u && npm update && npm install",
+    "update dependencies": "npm run check && npm run update",
     "lint": "eslint src/**.ts",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
@@ -44,23 +45,23 @@
     "No-IP"
   ],
   "dependencies": {
-    "@homebridge/plugin-ui-utils": "^0.1.0",
-    "undici": "^5.23.0",
+    "@homebridge/plugin-ui-utils": "^1.0.0",
+    "undici": "^5.27.0",
     "rxjs": "^7.8.1",
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.5.7",
-    "@typescript-eslint/eslint-plugin": "^6.4.1",
-    "@typescript-eslint/parser": "^6.4.1",
-    "eslint": "^8.48.0",
+    "@types/node": "^20.8.10",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
+    "eslint": "^8.52.0",
     "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-prettier": "5.0.0",
+    "eslint-plugin-prettier": "5.0.1",
     "nodemon": "^3.0.1",
     "homebridge": "^1.6.1",
-    "npm-check-updates": "^16.13.1",
-    "prettier": "3.0.2",
-    "rimraf": "^5.0.1",
+    "npm-check-updates": "^16.14.6",
+    "prettier": "3.0.3",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   }
