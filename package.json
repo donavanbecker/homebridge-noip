@@ -1,19 +1,20 @@
 {
-  "displayName": "Homebridge No-IP",
+  "displayName": "No-IP",
   "name": "homebridge-noip",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
+  "icon": "https://raw.githubusercontent.com/donavanbecker/homebridge-noip/beta-2.0.3/branding/icon.png",
   "repository": {
     "type": "git",
-    "url": "git://github.com/donavanbecker/homebridge-noip.git"
+    "url": "https://github.com/donavanbecker/homebridge-noip.git"
   },
   "bugs": {
     "url": "https://github.com/donavanbecker/homebridge-noip/issues"
   },
   "engines": {
-    "homebridge": "^1.6.1",
+    "homebridge": "^1.7.0",
     "node": "^18 || ^20"
   },
   "main": "dist/index.js",
@@ -24,7 +25,7 @@
     "lint": "eslint src/**.ts",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build",
+    "prepublishOnly": "npm run update && npm run lint && npm run build",
     "postpublish": "npm run clean",
     "clean": "rimraf ./dist",
     "test": "eslint src/**.ts"
@@ -46,23 +47,20 @@
   ],
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^1.0.0",
-    "undici": "^5.27.0",
+    "undici": "^5.28.0",
     "rxjs": "^7.8.1",
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.8.10",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
-    "eslint": "^8.52.0",
-    "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-prettier": "5.0.1",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
     "nodemon": "^3.0.1",
-    "homebridge": "^1.6.1",
-    "npm-check-updates": "^16.14.6",
-    "prettier": "3.0.3",
+    "homebridge": "^1.7.0",
+    "npm-check-updates": "^16.14.11",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   }
 }

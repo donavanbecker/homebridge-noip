@@ -1,6 +1,6 @@
 <span align="center">
 
-<a href="https://github.com/homebridge/verified/blob/master/verified-plugins.json"><img alt="homebridge-verified" src="https://raw.githubusercontent.com/donavanbecker/homebridge-noip/latest/noip/Homebridge_x_No-IP.svg?sanitize=true" width="350px"></a>
+<a href="https://github.com/homebridge/verified/blob/master/verified-plugins.json"><img alt="homebridge-verified" src="https://raw.githubusercontent.com/donavanbecker/homebridge-noip/latest/branding/Homebridge_x_No-IP.svg?sanitize=true" width="350px"></a>
 
 # Homebridge No-IP
 
