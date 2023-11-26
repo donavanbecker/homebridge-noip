@@ -1,13 +1,14 @@
 {
-  "displayName": "Homebridge No-IP",
+  "displayName": "No-IP",
   "name": "homebridge-noip",
-  "version": "2.0.2",
+  "version": "24.1.0",
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
+  "pluginIcon": "branding/icon.png",
   "repository": {
     "type": "git",
-    "url": "git://github.com/donavanbecker/homebridge-noip.git"
+    "url": "https://github.com/donavanbecker/homebridge-noip.git"
   },
   "bugs": {
     "url": "https://github.com/donavanbecker/homebridge-noip/issues"
@@ -46,18 +47,18 @@
   ],
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^1.0.0",
-    "undici": "^5.27.0",
+    "undici": "^5.27.2",
     "rxjs": "^7.8.1",
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.8.10",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
-    "eslint": "^8.52.0",
+    "@types/node": "^20.9.2",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.54.0",
     "nodemon": "^3.0.1",
-    "homebridge": "^1.6.1",
-    "npm-check-updates": "^16.14.6",
+    "homebridge": "^1.7.0",
+    "npm-check-updates": "^16.14.11",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
