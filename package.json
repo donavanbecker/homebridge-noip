@@ -5,6 +5,7 @@
   "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
+  "icon": "https://raw.githubusercontent.com/donavanbecker/homebridge-noip/beta-2.0.3/branding/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/donavanbecker/homebridge-noip.git"
