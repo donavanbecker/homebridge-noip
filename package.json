@@ -1,8 +1,8 @@
 {
   "displayName": "No-IP",
   "name": "homebridge-noip",
-  "version": "2.0.3",
-  "description": "The [Homebridge](https://homebridge.io) No-IP plugin allows you to update your [No-IP](http://noip.com) hostname(s) for your homebridge instance.",
+  "version": "2.0.4",
+  "description": "The No-IP plugin allows you to update your No-IP hostname(s) for your homebridge instance.",
   "author": "donavanbecker",
   "license": "Apache-2.0",
   "icon": "https://raw.githubusercontent.com/donavanbecker/homebridge-noip/beta-2.0.3/branding/icon.png",
@@ -25,7 +25,7 @@
     "lint": "eslint src/**.ts",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run update && npm run lint && npm run build",
+    "prepublishOnly": "npm run lint && npm run build",
     "postpublish": "npm run clean",
     "clean": "rimraf ./dist",
     "test": "eslint src/**.ts"
@@ -47,20 +47,20 @@
   ],
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^1.0.0",
-    "undici": "^5.28.0",
+    "undici": "^6.0.1",
     "rxjs": "^7.8.1",
     "super-stringify": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "@typescript-eslint/eslint-plugin": "^6.12.0",
-    "@typescript-eslint/parser": "^6.12.0",
-    "eslint": "^8.54.0",
-    "nodemon": "^3.0.1",
+    "@types/node": "^20.10.4",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint": "^8.55.0",
+    "nodemon": "^3.0.2",
     "homebridge": "^1.7.0",
-    "npm-check-updates": "^16.14.11",
+    "npm-check-updates": "^16.14.12",
     "rimraf": "^5.0.5",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.3.2"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
