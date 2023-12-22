@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
+## [Version 3.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v3.0.0) (2023-12-23)
+
+### What's Changes
+- Moved from CommonJS to ES Module
+- Housekeeping and updated dependencies.
+
+**Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.4...v3.0.0
+
 ## [Version 2.0.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.4) (2023-12-15)
 
 ### What's Changes

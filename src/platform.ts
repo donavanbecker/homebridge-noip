@@ -1,7 +1,11 @@
+/* Copyright(C) 2017-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
+ *
+ * protect-platform.ts: homebridge-cloudflared-tunnel platform class.
+ */
+import { API, DynamicPlatformPlugin, Logging, PlatformAccessory } from 'homebridge';
+import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig, DevicesConfig } from './settings.js';
+import { ContactSensor } from './devices/contactsensor.js';
 import { request } from 'undici';
-import { ContactSensor } from './devices/contactsensor';
-import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig } from './settings';
-import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Characteristic } from 'homebridge';
 
 /**
  * HomebridgePlatform
@@ -9,24 +13,34 @@ import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, Service, Charact
  * parse the user config and discover/register accessories with Homebridge.
  */
 export class NoIPPlatform implements DynamicPlatformPlugin {
-  public readonly Service: typeof Service = this.api.hap.Service;
-  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+  public accessories: PlatformAccessory[];
+  public readonly api: API;
+  public readonly log: Logging;
 
-  // this is used to track restored cached accessories
-  public readonly accessories: PlatformAccessory[] = [];
-
-  version = process.env.npm_package_version || '1.6.0';
+  version = process.env.npm_package_version || '1.0.0';
   Logging?: string;
   debugMode!: boolean;
   platformLogging?: string;
+  config!: NoIPPlatformConfig;
 
-  constructor(public readonly log: Logger, public readonly config: NoIPPlatformConfig, public readonly api: API) {
-    this.logs();
-    this.debugLog(`Finished initializing platform: ${this.config.name}`);
+  constructor(log: Logging, config: NoIPPlatformConfig, api: API) {
+    this.accessories = [];
+    this.api = api;
+    this.log = log;
     // only load if configured
-    if (!this.config) {
+    if (!config) {
       return;
     }
+
+    // Plugin options into our config variables.
+    this.config = {
+      platform: 'NoIPPlatform',
+      devices: config.devices as Array<DevicesConfig>,
+      refreshRate: config.refreshRate as number,
+      logging: config.logging as string,
+    };
+    this.logs();
+    this.debugLog(`Finished initializing platform: ${config.name}`);
 
     // verify the config
     try {
@@ -73,7 +87,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
      * Hidden Device Discovery Option
      * This will disable adding any device and will just output info.
      */
-    this.config.debug;
+    this.config.logging = this.config.logging || 'standard';
 
     if (this.config.refreshRate! < 1800) {
       throw new Error('Refresh Rate must be above 1800 (30 minutes).');
@@ -225,8 +239,8 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   logs() {
     this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
-      this.platformLogging = this.config.options!.logging;
+    if (this.config.logging === 'debug' || this.config.logging === 'standard' || this.config?.logging === 'none') {
+      this.platformLogging = this.config!.logging;
       this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
     } else if (this.debugMode) {
       this.platformLogging = 'debugMode';
