@@ -1,10 +1,13 @@
-import { API } from 'homebridge';
-import { PLATFORM_NAME } from './settings';
-import { NoIPPlatform } from './platform';
-
-/**
- * This method registers the platform with Homebridge
+/* Copyright(C) 2017-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
+ *
+ * index.ts: homebridge-cloudflared-tunnel plugin registration.
  */
-export = (api: API): void => {
-  api.registerPlatform(PLATFORM_NAME, NoIPPlatform);
+import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
+import { API } from 'homebridge';
+import { NoIPPlatform } from './platform.js';
+
+// Register our platform with homebridge.
+export default (api: API): void => {
+
+  api.registerPlatform(PLUGIN_NAME, PLATFORM_NAME, NoIPPlatform);
 };
