@@ -8,6 +8,9 @@ categories:
   - title: 'Enhancements'
     labels:
       - 'enhancement'
+  - title: 'Updated Dependencies'
+    labels:
+      - 'dependencies'
   - title: 'Documentation'
     labels:
       - 'docs'
