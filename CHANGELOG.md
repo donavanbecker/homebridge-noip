@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project uses [Semantic Versioning](https://semver.org/)
 
-## [Version 3.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v3.0.0) (2023-12-23)
+## [3.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v3.0.0) (2023-12-23)
 
 ### What's Changes
 - Moved from CommonJS to ES Module
@@ -10,35 +10,35 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.4...v3.0.0
 
-## [Version 2.0.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.4) (2023-12-15)
+## [2.0.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.4) (2023-12-15)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.3...v2.0.4
 
-## [Version 2.0.3](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.3) (2023-11-26)
+## [2.0.3](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.3) (2023-11-26)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.2...v2.0.3
 
-## [Version 2.0.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.2) (2023-10-31)
+## [2.0.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.2) (2023-10-31)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.1...v2.0.2
 
-## [Version 2.0.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.1) (2023-08-27)
+## [2.0.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.1) (2023-08-27)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v2.0.0...v2.0.1
 
-## [Version 2.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.0) (2023-08-19)
+## [2.0.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v2.0.0) (2023-08-19)
 
 ### What's Changes
 #### Major Changes
@@ -50,7 +50,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.6.2...v2.0.0
 
-## [Version 1.6.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.2) (2023-04-07)
+## [1.6.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.2) (2023-04-07)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
@@ -58,14 +58,14 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.6.1...v1.6.2
 
-## [Version 1.6.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.1) (2022-12-08)
+## [1.6.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.1) (2022-12-08)
 
 ### What's Changes
 - Housekeeping and updated dependencies.
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.6.0...v1.6.1
 
-## [Version 1.6.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.0) (2022-10-18)
+## [1.6.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.6.0) (2022-10-18)
 
 ### What's Changes
 - Added Config to allow manually setting firmware version.
@@ -73,7 +73,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.8...v1.6.0
 
-## [Version 1.5.8](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.8) (2022-08-31)
+## [1.5.8](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.8) (2022-08-31)
 
 ### What's Changes
 
@@ -81,7 +81,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.7...v1.5.8
 
-## [Version 1.5.7](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.7) (2022-06-25)
+## [1.5.7](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.7) (2022-06-25)
 
 ### What's Changes
 
@@ -89,7 +89,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.6...v1.5.7
 
-## [Version 1.5.6](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.6) (2022-05-04)
+## [1.5.6](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.6) (2022-05-04)
 
 ### What's Changes
 
@@ -97,7 +97,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.5...v1.5.6
 
-## [Version 1.5.5](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.5) (2022-03-19)
+## [1.5.5](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.5) (2022-03-19)
 
 ### What's Changes
 
@@ -105,7 +105,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.4...v1.5.5
 
-## [Version 1.5.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.4) (2022-02-15)
+## [1.5.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.4) (2022-02-15)
 
 ### What's Changes
 
@@ -113,7 +113,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.3...v1.5.4
 
-## [Version 1.5.3](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.3) (2022-02-12)
+## [1.5.3](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.3) (2022-02-12)
 
 ### What's Changes
 
@@ -121,7 +121,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.2...v1.5.3
 
-## [Version 1.5.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.2) (2022-01-29)
+## [1.5.2](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.2) (2022-01-29)
 
 ### What's Changes
 
@@ -129,7 +129,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.1...v1.5.2
 
-## [Version 1.5.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.1) (2022-01-22)
+## [1.5.1](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.1) (2022-01-22)
 
 ### What's Changes
 
@@ -137,7 +137,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.5.0...v1.5.1
 
-## [Version 1.5.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.0) (2022-01-13)
+## [1.5.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.5.0) (2022-01-13)
 
 ### What's Changes
 
@@ -145,7 +145,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.4.0...v1.5.0
 
-## [Version 1.4.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.4.0) (2022-01-06)
+## [1.4.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.4.0) (2022-01-06)
 
 ### What's Changes
 
@@ -153,7 +153,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.3.0...v1.4.0
 
-## [Version 1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (2022-01-06)
+## [1.3.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.3.0) (2022-01-06)
 
 ### What's Changes
 
@@ -170,7 +170,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.4...v1.3.0
 
-## [Version 1.2.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.2.4) (2021-12-15)
+## [1.2.4](https://github.com/donavanbecker/homebridge-noip/releases/tag/v1.2.4) (2021-12-15)
 
 ### What's Changes
 
@@ -178,7 +178,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.3...v1.2.4
 
-## [Version 1.2.3](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.2...v1.2.3) (2021-11-12)
+## [1.2.3](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.2...v1.2.3) (2021-11-12)
 
 ### What's Changes
 
@@ -186,7 +186,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.2..v1.2.3
 
-## [Version 1.2.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.1...v1.2.2) (2021-10-28)
+## [1.2.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.1...v1.2.2) (2021-10-28)
 
 ### What's Changes
 
@@ -194,7 +194,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.1...v1.2.2
 
-## [Version 1.2.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.0...v1.2.1) (2021-10-20)
+## [1.2.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.2.0...v1.2.1) (2021-10-20)
 
 ### What's Changes
 
@@ -203,7 +203,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.2.0...v1.2.1
 
-## [Version 1.2.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.2...v1.2.0) (2021-10-13)
+## [1.2.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.2...v1.2.0) (2021-10-13)
 
 ### What's Changes
 
@@ -211,7 +211,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.1.2...v1.2.0
 
-## [Version 1.1.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.1...v1.1.2) (2021-10-02)
+## [1.1.2](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.1...v1.1.2) (2021-10-02)
 
 ### What's Changes
 
@@ -219,7 +219,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.1.1...v1.1.2
 
-## [Version 1.1.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.0...v1.1.1) (2021-09-19)
+## [1.1.1](https://github.com/donavanbecker/homebridge-noip/compare/v1.1.0...v1.1.1) (2021-09-19)
 
 ### What's Changes
 
@@ -227,7 +227,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.1.0...v1.1.1
 
-## [Version 1.1.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.0.0...v1.0.1) (2021-09-17)
+## [1.1.0](https://github.com/donavanbecker/homebridge-noip/compare/v1.0.0...v1.0.1) (2021-09-17)
 
 ### What's Changes
 
@@ -235,7 +235,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v1.0.0...v1.1.0
 
-## [Version 1.0.0](https://github.com/donavanbecker/homebridge-noip/compare/v0.1.0...v1.0.0) (2021-08-09)
+## [1.0.0](https://github.com/donavanbecker/homebridge-noip/compare/v0.1.0...v1.0.0) (2021-08-09)
 
 ### What's Changes
 
@@ -243,7 +243,7 @@ All notable changes to this project will be documented in this file. This projec
 
 **Full Changelog**: https://github.com/donavanbecker/homebridge-noip/compare/v0.1.0...v1.0.0
 
-## [Version 0.1.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v0.1.0) (2021-08-09)
+## [0.1.0](https://github.com/donavanbecker/homebridge-noip/releases/tag/v0.1.0) (2021-08-09)
 
 ### What's Changes
 
