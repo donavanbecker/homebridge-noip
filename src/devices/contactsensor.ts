@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { Service, PlatformAccessory, CharacteristicValue, IPv4Address } from 'homebridge';
+import { Service, PlatformAccessory, CharacteristicValue, IPv4Address, API, HAP } from 'homebridge';
 import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
@@ -14,6 +14,10 @@ import { Context } from 'vm';
 export class ContactSensor {
   // Services
   private service: Service;
+
+
+  public readonly api: API;
+  protected readonly hap: HAP;
 
   // Characteristic Values
   ContactSensorState!: CharacteristicValue;
@@ -30,25 +34,28 @@ export class ContactSensor {
   response!: string;
 
   constructor(private readonly platform: NoIPPlatform, private accessory: PlatformAccessory, public device) {
+
+    this.api = this.platform.api;
+    this.hap = this.api.hap;
     // default placeholders
-    this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+    this.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
     // this is subject we use to track when we need to POST changes to the NoIP API
     this.SensorUpdateInProgress = false;
 
     // set accessory information
     accessory
-      .getService(this.platform.Service.AccessoryInformation)!
-      .setCharacteristic(this.platform.Characteristic.Manufacturer, 'No-IP')
-      .setCharacteristic(this.platform.Characteristic.Model, accessory.context.model)
-      .setCharacteristic(this.platform.Characteristic.SerialNumber, accessory.context.serialNumber)
-      .setCharacteristic(this.platform.Characteristic.FirmwareRevision, this.FirmwareRevision(accessory, device))
-      .getCharacteristic(this.platform.Characteristic.FirmwareRevision)
+      .getService(this.hap.Service.AccessoryInformation)!
+      .setCharacteristic(this.hap.Characteristic.Manufacturer, 'No-IP')
+      .setCharacteristic(this.hap.Characteristic.Model, accessory.context.model)
+      .setCharacteristic(this.hap.Characteristic.SerialNumber, accessory.context.serialNumber)
+      .setCharacteristic(this.hap.Characteristic.FirmwareRevision, this.FirmwareRevision(accessory, device))
+      .getCharacteristic(this.hap.Characteristic.FirmwareRevision)
       .updateValue(this.FirmwareRevision(accessory, device));
 
     // get the LightBulb service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
-    (this.service = this.accessory.getService(this.platform.Service.ContactSensor) || this.accessory.addService(this.platform.Service.ContactSensor)),
+    (this.service = this.accessory.getService(this.hap.Service.ContactSensor) || this.accessory.addService(this.hap.Service.ContactSensor)),
     device.hostname;
 
     // To avoid "Cannot add a Service with the same UUID another Service without aCSo defining a unique 'subtype' property." error,
@@ -57,7 +64,7 @@ export class ContactSensor {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.platform.Characteristic.Name, device.hostname);
+    this.service.setCharacteristic(this.hap.Characteristic.Name, device.hostname);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/
@@ -79,9 +86,9 @@ export class ContactSensor {
    */
   parseStatus() {
     if (this.response.includes('nochg')) {
-      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED;
+      this.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_DETECTED;
     } else {
-      this.ContactSensorState = this.platform.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
+      this.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
     }
     this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
   }
@@ -192,13 +199,13 @@ export class ContactSensor {
     if (this.ContactSensorState === undefined) {
       this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} ContactSensorState: ${this.ContactSensorState}`);
     } else {
-      this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, this.ContactSensorState);
+      this.service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, this.ContactSensorState);
       this.platform.debugLog(`Contact Sensor: ${this.accessory.displayName} updateCharacteristic ContactSensorState: ${this.ContactSensorState}`);
     }
   }
 
   public apiError(e: any) {
-    this.service.updateCharacteristic(this.platform.Characteristic.ContactSensorState, e);
+    this.service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, e);
   }
 
   FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string }): CharacteristicValue {
