@@ -1,10 +1,10 @@
-/* eslint-disable max-len */
 import { Service, PlatformAccessory, CharacteristicValue, IPv4Address, API, HAP } from 'homebridge';
 import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
 import { request } from 'undici';
 import { Context } from 'vm';
+import { DevicesConfig } from '../settings';
 
 /**
  * Platform Accessory
@@ -12,12 +12,10 @@ import { Context } from 'vm';
  * Each accessory may expose multiple services of different service types.
  */
 export class ContactSensor {
-  // Services
-  private service: Service;
-
-
   public readonly api: API;
   protected readonly hap: HAP;
+  // Services
+  private service: Service;
 
   // Characteristic Values
   ContactSensorState!: CharacteristicValue;
@@ -33,8 +31,11 @@ export class ContactSensor {
   SensorUpdateInProgress!: boolean;
   response!: string;
 
-  constructor(private readonly platform: NoIPPlatform, private accessory: PlatformAccessory, public device) {
-
+  constructor(
+    private readonly platform: NoIPPlatform,
+    private accessory: PlatformAccessory,
+    public device: DevicesConfig,
+  ) {
     this.api = this.platform.api;
     this.hap = this.api.hap;
     // default placeholders
@@ -144,7 +145,7 @@ export class ContactSensor {
       case 'nohost':
         this.platform.errorLog(
           'Hostname supplied does not exist under specified account, ' +
-            'client exit and require user to enter new login credentials before performing an additional request.',
+          'client exit and require user to enter new login credentials before performing an additional request.',
         );
         this.timeout();
         break;
@@ -165,8 +166,8 @@ export class ContactSensor {
       case 'abuse':
         this.platform.errorLog(
           'Username is blocked due to abuse. ' +
-            'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. ' +
-            'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.',
+          'Either for not following our update specifications or disabled due to violation of the No-IP terms of service. ' +
+          'Our terms of service can be viewed [here](https://www.noip.com/legal/tos). Client should stop sending updates.',
         );
         this.timeout();
         break;
@@ -208,7 +209,7 @@ export class ContactSensor {
     this.service.updateCharacteristic(this.hap.Characteristic.ContactSensorState, e);
   }
 
-  FirmwareRevision(accessory: PlatformAccessory<Context>, device: { firmware: string }): CharacteristicValue {
+  FirmwareRevision(accessory: PlatformAccessory<Context>, device: DevicesConfig): CharacteristicValue {
     let FirmwareRevision: string;
     this.platform.log.debug(
       `Contact Sensor: ${this.accessory.displayName}` + ` accessory.context.FirmwareRevision: ${accessory.context.FirmwareRevision}`,
@@ -218,7 +219,7 @@ export class ContactSensor {
     if (accessory.context.FirmwareRevision) {
       FirmwareRevision = accessory.context.FirmwareRevision;
     } else if (device.firmware) {
-      FirmwareRevision = device.firmware;
+      FirmwareRevision = String(device.firmware);
     } else {
       FirmwareRevision = this.platform.version;
     }
