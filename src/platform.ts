@@ -6,6 +6,7 @@ import { API, DynamicPlatformPlugin, Logging, PlatformAccessory } from 'homebrid
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig, DevicesConfig } from './settings.js';
 import { ContactSensor } from './devices/contactsensor.js';
 import { request } from 'undici';
+import { readFileSync } from 'fs';
 
 /**
  * HomebridgePlatform
@@ -17,10 +18,11 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   public readonly api: API;
   public readonly log: Logging;
 
-  version = process.env.npm_package_version || '1.0.0';
+  version!: string;
   Logging?: string;
   debugMode!: boolean;
-  platformLogging?: string;
+  platformConfig!: NoIPPlatformConfig['options'];
+  platformLogging!: NoIPPlatformConfig['logging'];
   config!: NoIPPlatformConfig;
 
   constructor(log: Logging, config: NoIPPlatformConfig, api: API) {
@@ -39,7 +41,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       refreshRate: config.refreshRate as number,
       logging: config.logging as string,
     };
-    this.logs();
+    this.platformLogging = this.config.options?.logging ?? 'standard';
+    this.platformConfigOptions();
+    this.platformLogs();
+    this.getVersion();
     this.debugLog(`Finished initializing platform: ${config.name}`);
 
     // verify the config
@@ -237,18 +242,57 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     return re.test(String(email).toLowerCase());
   }
 
-  logs() {
+  async platformConfigOptions() {
+    const platformConfig: NoIPPlatformConfig['options'] = {};
+    if (this.config.options) {
+      if (this.config.options.logging) {
+        platformConfig.logging = this.config.options.logging;
+      }
+      if (this.config.options.refreshRate) {
+        platformConfig.refreshRate = this.config.options.refreshRate;
+      }
+      if (this.config.options.pushRate) {
+        platformConfig.pushRate = this.config.options.pushRate;
+      }
+      if (Object.entries(platformConfig).length !== 0) {
+        this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
+      }
+      this.platformConfig = platformConfig;
+    }
+  }
+
+  async platformLogs() {
     this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    if (this.config.logging === 'debug' || this.config.logging === 'standard' || this.config?.logging === 'none') {
-      this.platformLogging = this.config!.logging;
-      this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
+    if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
+      this.platformLogging = this.config.options.logging;
+      if (this.platformLogging?.includes('debug')) {
+        this.debugWarnLog(`Using Config Logging: ${this.platformLogging}`);
+      }
     } else if (this.debugMode) {
       this.platformLogging = 'debugMode';
-      this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+      if (this.platformLogging?.includes('debug')) {
+        this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+      }
     } else {
       this.platformLogging = 'standard';
-      this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+      if (this.platformLogging?.includes('debug')) {
+        this.debugWarnLog(`Using ${this.platformLogging} Logging`);
+      }
     }
+    if (this.debugMode) {
+      this.platformLogging = 'debugMode';
+    }
+  }
+
+  async getVersion() {
+    const json = JSON.parse(
+      readFileSync(
+        new URL('../package.json', import.meta.url),
+        'utf-8',
+      ),
+    );
+    this.debugLog(`Plugin Version: ${json.version}`);
+    this.version = json.version;
   }
 
   /**
