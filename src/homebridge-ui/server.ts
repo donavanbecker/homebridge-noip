@@ -11,7 +11,7 @@ class PluginUiServer extends HomebridgePluginUiServer {
     */
     this.onRequest('getCachedAccessories', () => {
       try {
-        const plugin = 'homebridge-resideo';
+        const plugin = 'homebridge-noip';
         const devicesToReturn = [];
 
         // The path and file of the cached accessories
