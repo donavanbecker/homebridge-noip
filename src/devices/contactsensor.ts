@@ -1,10 +1,11 @@
-import { Service, PlatformAccessory, CharacteristicValue, IPv4Address, API, HAP } from 'homebridge';
+/* eslint-disable max-len */
+import { Service, PlatformAccessory, CharacteristicValue, IPv4Address, API, HAP, Logging } from 'homebridge';
 import { NoIPPlatform } from '../platform';
 import { interval, throwError } from 'rxjs';
 import { skipWhile, timeout } from 'rxjs/operators';
 import { request } from 'undici';
 import { Context } from 'vm';
-import { DevicesConfig } from '../settings';
+import { DevicesConfig, NoIPPlatformConfig } from '../settings.js';
 
 /**
  * Platform Accessory
@@ -13,6 +14,8 @@ import { DevicesConfig } from '../settings';
  */
 export class ContactSensor {
   public readonly api: API;
+  public readonly log: Logging;
+  public readonly config!: NoIPPlatformConfig;
   protected readonly hap: HAP;
   // Services
   private service: Service;
@@ -37,8 +40,10 @@ export class ContactSensor {
     public device: DevicesConfig,
   ) {
     this.api = this.platform.api;
+    this.log = this.platform.log;
+    this.config = this.platform.config;
     this.hap = this.api.hap;
-    // default placeholders
+
     this.ContactSensorState = this.hap.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED;
 
     // this is subject we use to track when we need to POST changes to the NoIP API
@@ -54,7 +59,7 @@ export class ContactSensor {
       .getCharacteristic(this.hap.Characteristic.FirmwareRevision)
       .updateValue(this.FirmwareRevision(accessory, device));
 
-    // get the LightBulb service if it exists, otherwise create a new LightBulb service
+    // get the ContactSensor service if it exists, otherwise create a new LightBulb service
     // you can create multiple services for each accessory
     (this.service = this.accessory.getService(this.hap.Service.ContactSensor) || this.accessory.addService(this.hap.Service.ContactSensor)),
     device.hostname;
@@ -65,7 +70,7 @@ export class ContactSensor {
 
     // set the service name, this is what is displayed as the default name on the Home app
     // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.service.setCharacteristic(this.hap.Characteristic.Name, device.hostname);
+    this.service.setCharacteristic(this.hap.Characteristic.Name, device.hostname!);
 
     // each service must implement at-minimum the "required characteristics" for the given service type
     // see https://developers.homebridge.io/#/service/
