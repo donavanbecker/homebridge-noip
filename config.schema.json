@@ -3,6 +3,7 @@
   "pluginType": "platform",
   "singular": true,
   "customUi": true,
+  "customUiPath": "./dist/homebridge-ui",
   "headerDisplay": "<p align='center'><img width='250px' src='https://raw.githubusercontent.com/donavanbecker/homebridge-noip/latest/branding/Homebridge_x_No-IP.svg'></p>\n\nThe **Homebridge No-IP** plugin allows you to update your No-IP hostnames. \n\nTo get started link your No-IP account using the button below.",
   "footerDisplay": "Your No-IP account has been linked. Please raise any issues on our [project page](https://github.com/donavanbecker/homebridge-noip/issues).\n\nIf you would like to have other features, fill out [Feature Request Form](https://github.com/donavanbecker/homebridge-noip/issues/new?assignees=&labels=&template=feature_request.md).",
   "schema": {
