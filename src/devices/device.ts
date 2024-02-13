@@ -47,8 +47,8 @@ export abstract class deviceBase {
     } else if (device.logging) {
       this.deviceLogging = this.accessory.context.logging = device.logging;
       this.debugWarnLog(`Lock: ${this.accessory.displayName} Using Device Config Logging: ${this.deviceLogging}`);
-    } else if (this.platform.config.options?.logging) {
-      this.deviceLogging = this.accessory.context.logging = this.platform.config.options?.logging;
+    } else if (this.config.logging) {
+      this.deviceLogging = this.accessory.context.logging = this.config.logging;
       this.debugWarnLog(`Lock: ${this.accessory.displayName} Using Platform Config Logging: ${this.deviceLogging}`);
     } else {
       this.deviceLogging = this.accessory.context.logging = 'standard';
@@ -64,8 +64,8 @@ export abstract class deviceBase {
       }
       this.deviceRefreshRate = this.accessory.context.refreshRate = device.refreshRate;
       this.debugLog(`Lock: ${this.accessory.displayName} Using Device Config refreshRate: ${this.deviceRefreshRate}`);
-    } else if (this.platform.config.options!.refreshRate) {
-      this.deviceRefreshRate = this.accessory.context.refreshRate = this.platform.config.options!.refreshRate;
+    } else if (this.config.refreshRate) {
+      this.deviceRefreshRate = this.accessory.context.refreshRate = this.config.refreshRate;
       this.debugLog(`Lock: ${this.accessory.displayName} Using Platform Config refreshRate: ${this.deviceRefreshRate}`);
     }
   }
@@ -88,34 +88,34 @@ export abstract class deviceBase {
    */
   infoLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
-      this.platform.log.info(String(...log));
+      this.log.info(String(...log));
     }
   }
 
   warnLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
-      this.platform.log.warn(String(...log));
+      this.log.warn(String(...log));
     }
   }
 
   debugWarnLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
       if (this.deviceLogging?.includes('debug')) {
-        this.platform.log.warn('[DEBUG]', String(...log));
+        this.log.warn('[DEBUG]', String(...log));
       }
     }
   }
 
   errorLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
-      this.platform.log.error(String(...log));
+      this.log.error(String(...log));
     }
   }
 
   debugErrorLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
       if (this.deviceLogging?.includes('debug')) {
-        this.platform.log.error('[DEBUG]', String(...log));
+        this.log.error('[DEBUG]', String(...log));
       }
     }
   }
@@ -123,9 +123,9 @@ export abstract class deviceBase {
   debugLog(...log: any[]): void {
     if (this.enablingDeviceLogging()) {
       if (this.deviceLogging === 'debug') {
-        this.platform.log.info('[DEBUG]', String(...log));
+        this.log.info('[DEBUG]', String(...log));
       } else {
-        this.platform.log.debug(String(...log));
+        this.log.debug(String(...log));
       }
     }
   }
