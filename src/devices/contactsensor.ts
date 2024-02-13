@@ -88,7 +88,7 @@ export class ContactSensor extends deviceBase {
         },
         headers: {
           Authorization: `Basic ${Buffer.from(`${this.device.username}:${this.device.password}`).toString('base64')}`,
-          'User-Agent': `Homebridge-NoIP/v${this.platform.version}`,
+          'User-Agent': `Homebridge-NoIP/v${this.device.firmware}`,
         },
       });
       const response = await body.text();

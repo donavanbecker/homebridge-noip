@@ -23,7 +23,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   platformConfig!: NoIPPlatformConfig;
   platformLogging!: NoIPPlatformConfig['logging'];
   debugMode!: boolean;
-  version!: string;
 
   constructor(
     log: Logging,
@@ -48,7 +47,6 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     };
     this.platformConfigOptions();
     this.platformLogs();
-    this.getVersion();
     this.debugLog(`Finished initializing platform: ${config.name}`);
 
     // verify the config
@@ -171,7 +169,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.serialNumber = await this.publicIPv4();
         this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
-        existingAccessory.context.firmwareRevision = await this.FirmwareRevision(device);
+        existingAccessory.context.FirmwareRevision = await this.FirmwareRevision(device);
         this.api.updatePlatformAccessories([existingAccessory]);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
@@ -193,7 +191,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.context.serialNumber = await this.publicIPv4();
       this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
-      accessory.context.firmwareRevision = await this.FirmwareRevision(device);
+      accessory.context.FirmwareRevision = await this.FirmwareRevision(device);
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
@@ -212,7 +210,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     if (device.firmware) {
       firmware = device.firmware;
     } else {
-      firmware = this.version;
+      firmware = await this.getVersion();
     }
     return firmware;
   }
@@ -296,7 +294,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       ),
     );
     this.debugLog(`Plugin Version: ${json.version}`);
-    this.version = json.version;
+    return json.version;
   }
 
   /**

@@ -25,7 +25,7 @@ export type DevicesConfig = {
   hostname: string;
   username?: string;
   password?: string;
-  firmware: number;
+  firmware: string;
   refreshRate?: number;
   logging?: string;
   delete?: boolean;

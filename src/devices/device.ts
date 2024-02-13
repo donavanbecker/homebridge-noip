@@ -30,6 +30,7 @@ export abstract class deviceBase {
     this.deviceLogs(device);
     this.getDeviceRefreshRate(device);
     this.deviceConfigOptions(device);
+    this.deviceContext(accessory, device);
 
     // Set accessory information
     accessory
@@ -80,6 +81,16 @@ export abstract class deviceBase {
     }
     if (Object.entries(deviceConfig).length !== 0) {
       this.infoLog(`Lock: ${this.accessory.displayName} Config: ${JSON.stringify(deviceConfig)}`);
+    }
+  }
+
+  async deviceContext(accessory: PlatformAccessory, device: DevicesConfig): Promise<void> {
+    if (device.firmware) {
+      accessory.context.FirmwareRevision = device.firmware;
+    } else if (accessory.context.FirmwareRevision === undefined) {
+      accessory.context.FirmwareRevision = await this.platform.getVersion();
+    } else {
+      accessory.context.FirmwareRevision = '3';
     }
   }
 
