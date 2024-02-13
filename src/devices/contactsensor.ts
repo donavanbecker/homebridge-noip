@@ -46,8 +46,7 @@ export class ContactSensor extends deviceBase {
 
     // Add Contact Sensor Service's Characteristics
     this.contactSensor.service
-      .setCharacteristic(this.hap.Characteristic.Name, device.hostname)
-      .setCharacteristic(this.hap.Characteristic.ConfiguredName, accessory.displayName);
+      .setCharacteristic(this.hap.Characteristic.Name, device.hostname);
 
     // this is subject we use to track when we need to POST changes to the NoIP API
     this.SensorUpdateInProgress = false;
