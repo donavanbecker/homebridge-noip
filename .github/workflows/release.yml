@@ -28,7 +28,6 @@ jobs:
 
     uses: donavanbecker/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      footer_title: "August"
+      footer_title: "NoIP"
     secrets:
       DISCORD_WEBHOOK_URL_LATEST: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}
-      DISCORD_WEBHOOK_URL_BETA: ${{ secrets.DISCORD_WEBHOOK_URL_BETA }}
