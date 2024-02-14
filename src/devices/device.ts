@@ -44,16 +44,16 @@ export abstract class deviceBase {
   async deviceLogs(device: DevicesConfig): Promise<void> {
     if (this.platform.debugMode) {
       this.deviceLogging = this.accessory.context.logging = 'debugMode';
-      this.debugWarnLog(`Lock: ${this.accessory.displayName} Using Debug Mode Logging: ${this.deviceLogging}`);
+      this.debugWarnLog(`Contact Sensor: ${this.accessory.displayName} Using Debug Mode Logging: ${this.deviceLogging}`);
     } else if (device.logging) {
       this.deviceLogging = this.accessory.context.logging = device.logging;
-      this.debugWarnLog(`Lock: ${this.accessory.displayName} Using Device Config Logging: ${this.deviceLogging}`);
+      this.debugWarnLog(`Contact Sensor: ${this.accessory.displayName} Using Device Config Logging: ${this.deviceLogging}`);
     } else if (this.config.logging) {
       this.deviceLogging = this.accessory.context.logging = this.config.logging;
-      this.debugWarnLog(`Lock: ${this.accessory.displayName} Using Platform Config Logging: ${this.deviceLogging}`);
+      this.debugWarnLog(`Contact Sensor: ${this.accessory.displayName} Using Platform Config Logging: ${this.deviceLogging}`);
     } else {
       this.deviceLogging = this.accessory.context.logging = 'standard';
-      this.debugWarnLog(`Lock: ${this.accessory.displayName} Logging Not Set, Using: ${this.deviceLogging}`);
+      this.debugWarnLog(`Contact Sensor: ${this.accessory.displayName} Logging Not Set, Using: ${this.deviceLogging}`);
     }
   }
 
@@ -64,10 +64,10 @@ export abstract class deviceBase {
         this.warnLog('Refresh Rate cannot be set to lower the 5 mins, as Lock detail (battery level, etc) are unlikely to change within that period');
       }
       this.deviceRefreshRate = this.accessory.context.refreshRate = device.refreshRate;
-      this.debugLog(`Lock: ${this.accessory.displayName} Using Device Config refreshRate: ${this.deviceRefreshRate}`);
+      this.debugLog(`Contact Sensor: ${this.accessory.displayName} Using Device Config refreshRate: ${this.deviceRefreshRate}`);
     } else if (this.config.refreshRate) {
       this.deviceRefreshRate = this.accessory.context.refreshRate = this.config.refreshRate;
-      this.debugLog(`Lock: ${this.accessory.displayName} Using Platform Config refreshRate: ${this.deviceRefreshRate}`);
+      this.debugLog(`Contact Sensor: ${this.accessory.displayName} Using Platform Config refreshRate: ${this.deviceRefreshRate}`);
     }
   }
 
@@ -80,7 +80,7 @@ export abstract class deviceBase {
       deviceConfig['refreshRate'] = device.refreshRate;
     }
     if (Object.entries(deviceConfig).length !== 0) {
-      this.infoLog(`Lock: ${this.accessory.displayName} Config: ${JSON.stringify(deviceConfig)}`);
+      this.infoLog(`Contact Sensor: ${this.accessory.displayName} Config: ${JSON.stringify(deviceConfig)}`);
     }
   }
 
