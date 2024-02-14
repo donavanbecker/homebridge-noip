@@ -1,6 +1,6 @@
-/* Copyright(C) 2017-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
+/* Copyright(C) 2021-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * index.ts: homebridge-noip plugin registration.
+ * index.ts: homebridge-noip.
  */
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
 import { API } from 'homebridge';

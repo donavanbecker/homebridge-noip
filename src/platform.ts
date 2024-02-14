@@ -1,8 +1,8 @@
-/* Copyright(C) 2017-2023, donavanbecker (https://github.com/donavanbecker). All rights reserved.
+/* Copyright(C) 2021-2024, donavanbecker (https://github.com/donavanbecker). All rights reserved.
  *
- * protect-platform.ts: homebridge-noip platform class.
+ * platform.ts: homebridge-noip.
  */
-import { API, DynamicPlatformPlugin, Logging, PlatformAccessory } from 'homebridge';
+import { API, DynamicPlatformPlugin, HAP, Logging, PlatformAccessory } from 'homebridge';
 import { PLATFORM_NAME, PLUGIN_NAME, NoIPPlatformConfig, DevicesConfig } from './settings.js';
 import { ContactSensor } from './devices/contactsensor.js';
 import { request } from 'undici';
@@ -17,17 +17,21 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   public accessories: PlatformAccessory[];
   public readonly api: API;
   public readonly log: Logging;
+  protected readonly hap: HAP;
+  public config!: NoIPPlatformConfig;
 
-  version!: string;
-  Logging?: string;
-  debugMode!: boolean;
-  platformConfig!: NoIPPlatformConfig['options'];
+  platformConfig!: NoIPPlatformConfig;
   platformLogging!: NoIPPlatformConfig['logging'];
-  config!: NoIPPlatformConfig;
+  debugMode!: boolean;
 
-  constructor(log: Logging, config: NoIPPlatformConfig, api: API) {
+  constructor(
+    log: Logging,
+    config: NoIPPlatformConfig,
+    api: API,
+  ) {
     this.accessories = [];
     this.api = api;
+    this.hap = this.api.hap;
     this.log = log;
     // only load if configured
     if (!config) {
@@ -36,26 +40,26 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
     // Plugin options into our config variables.
     this.config = {
-      platform: 'NoIPPlatform',
+      platform: 'NoIP',
       devices: config.devices as Array<DevicesConfig>,
       refreshRate: config.refreshRate as number,
       logging: config.logging as string,
     };
-    this.platformLogging = this.config.options?.logging ?? 'standard';
     this.platformConfigOptions();
     this.platformLogs();
-    this.getVersion();
     this.debugLog(`Finished initializing platform: ${config.name}`);
 
     // verify the config
-    try {
-      this.verifyConfig();
-      this.debugLog('Config OK');
-    } catch (e: any) {
-      this.errorLog(JSON.stringify(e.message));
-      this.debugLog(JSON.stringify(e));
-      return;
-    }
+    (async () => {
+      try {
+        await this.verifyConfig();
+        this.debugLog('Config OK');
+      } catch (e: any) {
+        this.errorLog(`Verify Config, Error Message: ${e.message}, Submit Bugs Here: https://bit.ly/homebridge-noip-bug-report`);
+        this.debugErrorLog(`Verify Config, Error: ${e}`);
+        return;
+      }
+    })();
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -65,10 +69,10 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       log.debug('Executed didFinishLaunching callback');
       // run the method to discover / register your devices as accessories
       try {
-        this.discoverDevices();
+        await this.discoverDevices();
       } catch (e: any) {
         this.errorLog(`Failed to Discover Devices ${JSON.stringify(e.message)}`);
-        this.debugLog(JSON.stringify(e));
+        this.debugErrorLog(`Failed to Discover, Error: ${e}`);
       }
     });
   }
@@ -165,7 +169,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
         existingAccessory.context.serialNumber = await this.publicIPv4();
         this.debugLog(JSON.stringify(existingAccessory.context.serialNumber));
         existingAccessory.context.model = 'DUC';
-        existingAccessory.context.firmwareRevision = await this.FirmwareRevision(device);
+        existingAccessory.context.FirmwareRevision = await this.FirmwareRevision(device);
         this.api.updatePlatformAccessories([existingAccessory]);
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
@@ -187,7 +191,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       accessory.context.serialNumber = await this.publicIPv4();
       this.debugLog(JSON.stringify(accessory.context.serialNumber));
       accessory.context.model = 'DUC';
-      accessory.context.firmwareRevision = await this.FirmwareRevision(device);
+      accessory.context.FirmwareRevision = await this.FirmwareRevision(device);
       // create the accessory handler for the newly create accessory
       // this is imported from `platformAccessory.ts`
       new ContactSensor(this, accessory, device);
@@ -206,7 +210,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
     if (device.firmware) {
       firmware = device.firmware;
     } else {
-      firmware = this.version;
+      firmware = await this.getVersion();
     }
     return firmware;
   }
@@ -243,26 +247,24 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
   }
 
   async platformConfigOptions() {
-    const platformConfig: NoIPPlatformConfig['options'] = {};
-    if (this.config.options) {
-      if (this.config.options.logging) {
-        platformConfig.logging = this.config.options.logging;
-      }
-      if (this.config.options.refreshRate) {
-        platformConfig.refreshRate = this.config.options.refreshRate;
-      }
-      if (this.config.options.pushRate) {
-        platformConfig.pushRate = this.config.options.pushRate;
-      }
-      if (Object.entries(platformConfig).length !== 0) {
-        this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
-      }
-      this.platformConfig = platformConfig;
+    const platformConfig: NoIPPlatformConfig = {
+      platform: '',
+    };
+    if (this.config.logging) {
+      platformConfig.logging = this.config.logging;
     }
+    if (this.config.refreshRate) {
+      platformConfig.refreshRate = this.config.refreshRate;
+    }
+    if (Object.entries(platformConfig).length !== 0) {
+      this.debugLog(`Platform Config: ${JSON.stringify(platformConfig)}`);
+    }
+    this.platformConfig = platformConfig;
   }
 
   async platformLogs() {
     this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
+    this.platformLogging = this.config.options?.logging || 'standard';
     if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
       this.platformLogging = this.config.options.logging;
       if (this.platformLogging?.includes('debug')) {
@@ -292,7 +294,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
       ),
     );
     this.debugLog(`Plugin Version: ${json.version}`);
-    this.version = json.version;
+    return json.version;
   }
 
   /**
