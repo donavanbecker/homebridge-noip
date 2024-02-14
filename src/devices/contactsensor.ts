@@ -56,10 +56,10 @@ export class ContactSensor extends deviceBase {
     this.updateHomeKitCharacteristics();
 
     // Start an update interval
-    this.interval = interval(this.platform.config.refreshRate! * 1000)
+    interval(this.deviceRefreshRate * 1000)
       .pipe(skipWhile(() => this.SensorUpdateInProgress))
-      .subscribe(() => {
-        this.refreshStatus();
+      .subscribe(async () => {
+        await this.refreshStatus();
       });
   }
 

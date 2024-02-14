@@ -264,7 +264,7 @@ export class NoIPPlatform implements DynamicPlatformPlugin {
 
   async platformLogs() {
     this.debugMode = process.argv.includes('-D') || process.argv.includes('--debug');
-    this.platformLogging = this.config.options?.logging ?? 'standard';
+    this.platformLogging = this.config.options?.logging || 'standard';
     if (this.config.options?.logging === 'debug' || this.config.options?.logging === 'standard' || this.config.options?.logging === 'none') {
       this.platformLogging = this.config.options.logging;
       if (this.platformLogging?.includes('debug')) {
